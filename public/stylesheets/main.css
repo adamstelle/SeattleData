@@ -1,0 +1,47 @@
+#wrapper {
+  padding: 2rem;
+}
+
+body {
+  background-color: #d3d3d3;
+}
+
+#results {
+  width: 100%;
+  border-top: 1px solid #eee;
+  margin-top: 2rem;
+  padding-top: 1rem;
+}
+
+.title {
+  font-size: 4rem;
+  font-weight: bolder;
+}
+
+.resultTitle {
+  font-size: 1.7rem;
+  font-weight: lighter;
+}
+
+.tableContainer {
+  margin-top: 2rem;
+}
+
+.percent {
+  color: #337ab7;
+  font-size: 8rem;
+  font-weight: bold;
+  line-height: normal;
+}
+
+#first .percent {
+  font-size: 14rem;
+}
+
+#totalpercent {
+  font-size: 2rem;
+}
+
+#first .resultTitle {
+  font-size: 3rem;
+}

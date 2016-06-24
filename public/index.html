@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" type="text/css" href="stylesheets/main.css"></link>
+  <link rel="stylesheet" type="text/css" href="stylesheets/iThing.css"></link>
+  <link rel="stylesheet" type="text/css" href="stylesheets/jquery.dynatable.css"></link>
+  <link rel="stylesheet" type="text/css" href="stylesheets/bootstrap.min.css"></link>
+  <link rel="stylesheet" type="text/css" href="stylesheets/unsemantic-grid.css"></link>
+</head>
+<body>
+  <div id="wrapper">
+    <div id='content'>
+      <div class="page-header">
+        <h1 class="title">Seattle Fire Services</h1>
+        <h2>Tracking our fire trucks since 2016.</h2>
+      </div>
+      <div class="selectDates">
+        <h3>Choose a date range using the slider, then click submit</h3>
+        <p>This widget takes the date range provided and returns a table of all Seattle fire departmnent emergency response requests.</p>
+      	<div id="slider"></div><br/>
+      	<button type="button" id ="datesubmit" class = "btn btn-primary">Submit</button>
+      </div>
+        <div id="results">
+          <div id="total"></div><br>
+          <div id="first" class="grid-35 suffix-10"><span class="percent"></span><br><span class="resultTitle"></span><br></div>
+          <div class="grid-55">
+            <div id="second" class="grid-50"><span class="percent"></span><br><span class="resultTitle"></span><br></div>
+            <div id="third" class="grid-50"><span class="percent"></span><br><span class="resultTitle"></span><br></div>
+            <div id="fourth" class="grid-50"><span class="percent"></span><br><span class="resultTitle"></span><br></div>
+            <div id="fifth" class="grid-50"><span class="percent"></span><br><span class="resultTitle"></span><br></div>
+          </div>
+        </div>
+        <button type ="button" id ="seeDataButton" class = "btn btn-primary">View Data</button>
+        <button type ="button" id ="downloadButton" class = "btn btn-primary">Download CSV</button>
+        <div class= "tableContainer">
+        	<table id="my-final-table" class="table table-bordered">
+            <thead>
+              <th>type</th>
+              <th>address</th>
+              <th>datetime</th>
+              <th>incident_number</th>
+              <th>latitude</th>
+              <th>longitude</th>
+            </thead>
+            <tbody>
+            </tbody>
+          </table>
+        </div>
+        </div>
+      </div>
+    </div>
+  <script src="js/jquery-3.0.0.min.js"></script>
+  <script src="js/jquery-ui.js"></script>
+  <script src="js/jQAllRangeSliders-min.js"></script>
+  <script src="js/jquery.dynatable.js"></script>
+  <script src="js/moment.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
