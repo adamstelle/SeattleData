@@ -13,6 +13,11 @@ body {
   padding-top: 1rem;
 }
 
+.percentSign {
+  font-size: 4rem;
+  font-weight: bold;
+}
+
 .title {
   font-size: 4rem;
   font-weight: bolder;
@@ -21,6 +26,7 @@ body {
 .resultTitle {
   font-size: 1.7rem;
   font-weight: lighter;
+  line-height: 0;
 }
 
 .tableContainer {
@@ -31,11 +37,14 @@ body {
   color: #337ab7;
   font-size: 8rem;
   font-weight: bold;
-  line-height: normal;
 }
 
 #first .percent {
   font-size: 14rem;
+}
+
+#first .percentSign {
+  font-size: 7rem;
 }
 
 #totalpercent {

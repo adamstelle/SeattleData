@@ -128,25 +128,26 @@ function sortResults(counts) {
 
   $("#total").append("<h4>In this period, the Seattle Fire Department responded to <span id='totalpercent' class='percent'></span> calls. Below is a breakdown of the most common reasons for fire trucks leaving the station.</h4>");
   $("#totalpercent").append(totalIncidents);
-  $("#first").children(".percent").append(firstplace.percent);
+
+  $("#first").children(".percent").append(""+firstplace.percent+"<span class='percentSign'>%</span>");
   $("#first").children(".resultTitle").append(firstplace.key);
-  $("#first").append(firstplace.value);
+  $("#first").append(""+firstplace.value+"  total incidents.");
 
-  $("#second").children(".percent").append(secondplace.percent);
+  $("#second").children(".percent").append(""+secondplace.percent+"<span class='percentSign'>%</span>");
   $("#second").children(".resultTitle").append(secondplace.key);
-  $("#second").append(secondplace.value);
+  $("#second").append(""+secondplace.value+"  total incidents.");
 
-  $("#third").children(".percent").append(thirdplace.percent);
+  $("#third").children(".percent").append(""+thirdplace.percent+"<span class='percentSign'>%</span>");
   $("#third").children(".resultTitle").append(thirdplace.key);
-  $("#third").append(thirdplace.value);
+  $("#third").append(""+thirdplace.value+"  total incidents.");
 
-  $("#fourth").children(".percent").append(fourthplace.percent);
+  $("#fourth").children(".percent").append(""+fourthplace.percent+"<span class='percentSign'>%</span>");
   $("#fourth").children(".resultTitle").append(fourthplace.key);
-  $("#fourth").append(fourthplace.value);
+  $("#fourth").append(""+fourthplace.value+"  total incidents.");
 
-  $("#fifth").children(".percent").append(fifthplace.percent);
+  $("#fifth").children(".percent").append(""+fifthplace.percent+"<span class='percentSign'>%</span>");
   $("#fifth").children(".resultTitle").append(fifthplace.key);
-  $("#fifth").append(fifthplace.value);
+  $("#fifth").append(""+fifthplace.value+"  total incidents.");
 
   // $("#first").append(firstplace.key + firstplace.percent + firstplace.value+" total votes.");
   // $("#second").append(secondplace.key + secondplace.percent + secondplace.value+" total votes.");
