@@ -4,6 +4,7 @@ $(".tableContainer").hide();
 
 // Get today's date
 var today = new Date().toJSON().slice(0,10);
+var numDays;
 
 $("#slider").dateRangeSlider({
   bounds:{
@@ -24,6 +25,9 @@ $("#datesubmit").on("click", function() {
   // Retrieve selected dates from slider
   inputMax = $("#slider").dateRangeSlider("max");
   inputMin = $("#slider").dateRangeSlider("min");
+
+  // Calculate number of days in range
+  numDays = Math.round((inputMax - inputMin)/(1000*60*60*24))
 
   // Format min & max into SODA format
   inputMax = moment(inputMax)
@@ -129,24 +133,24 @@ function sortResults(counts) {
   $("#total").append("<h4>In this period, the Seattle Fire Department responded to <span id='totalpercent' class='percent'></span> calls. Below is a breakdown of the most common reasons for fire trucks leaving the station.</h4>");
   $("#totalpercent").append(totalIncidents);
 
-  $("#first").children(".percent").append(""+firstplace.percent+"<span class='percentSign'>%</span>");
   $("#first").children(".resultTitle").append(firstplace.key);
+  $("#first").children(".percent").append(""+firstplace.percent+"<span class='percentSign'>%</span>");
   $("#first").append(""+firstplace.value+"  total incidents.");
 
-  $("#second").children(".percent").append(""+secondplace.percent+"<span class='percentSign'>%</span>");
   $("#second").children(".resultTitle").append(secondplace.key);
+  $("#second").children(".percent").append(""+secondplace.percent+"<span class='percentSign'>%</span>");
   $("#second").append(""+secondplace.value+"  total incidents.");
 
-  $("#third").children(".percent").append(""+thirdplace.percent+"<span class='percentSign'>%</span>");
   $("#third").children(".resultTitle").append(thirdplace.key);
+  $("#third").children(".percent").append(""+thirdplace.percent+"<span class='percentSign'>%</span>");
   $("#third").append(""+thirdplace.value+"  total incidents.");
 
-  $("#fourth").children(".percent").append(""+fourthplace.percent+"<span class='percentSign'>%</span>");
   $("#fourth").children(".resultTitle").append(fourthplace.key);
+  $("#fourth").children(".percent").append(""+fourthplace.percent+"<span class='percentSign'>%</span>");
   $("#fourth").append(""+fourthplace.value+"  total incidents.");
 
-  $("#fifth").children(".percent").append(""+fifthplace.percent+"<span class='percentSign'>%</span>");
   $("#fifth").children(".resultTitle").append(fifthplace.key);
+  $("#fifth").children(".percent").append(""+fifthplace.percent+"<span class='percentSign'>%</span>");
   $("#fifth").append(""+fifthplace.value+"  total incidents.");
 
   // $("#first").append(firstplace.key + firstplace.percent + firstplace.value+" total votes.");
