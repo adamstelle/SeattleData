@@ -2,10 +2,6 @@
   padding: 2rem;
 }
 
-body {
-  background-color: #d3d3d3;
-}
-
 #results {
   width: 100%;
   border-top: 1px solid #eee;
@@ -14,9 +10,6 @@ body {
   line-height: 1;
 }
 
-.h1 {
-  color: #4A677F;
-}
 .percentSign {
   font-size: 4rem;
   font-weight: bold;

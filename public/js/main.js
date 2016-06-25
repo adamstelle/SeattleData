@@ -18,7 +18,6 @@ $("#slider").dateRangeSlider({
 });
 
 $("#datesubmit").on("click", function() {
-
   // Base SODA endpoint
   baseURL = "https://data.seattle.gov/resource/grwu-wqtk";
 
