@@ -1,0 +1,34 @@
+{
+  "name": "seattle-emergency-services",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "description": "A data vizualization tool to help citizens understand what their government does.",
+  "main": "server.js",
+  "dependencies": {
+    "jquery": "^3.0.0",
+    "node-socrata": "^0.0.50"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/adamstelle/SeattleData.git"
+  },
+  "keywords": [
+    "open",
+    "data",
+    "data",
+    "seattle",
+    "emergency",
+    "services",
+    "data",
+    "vizualization"
+  ],
+  "author": "Adam Stelle",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/adamstelle/SeattleData/issues"
+  },
+  "homepage": "https://github.com/adamstelle/SeattleData#readme"
+}
