@@ -14,7 +14,7 @@ module.exports = function(grunt) {
     },
     less: {
       development: {
-        options: {
+          options: {
           customFunctions: {
             static: function(lessObject, name) {
               return "url('" +
@@ -22,7 +22,6 @@ module.exports = function(grunt) {
                 "')";
             }
           },
-          paths: ["public/stylesheets/css"]
         },
         files: {
           'public/stylesheets/main.css': 'less/main.less',
@@ -37,5 +36,6 @@ module.exports = function(grunt) {
 
   // Default task(s).
   grunt.registerTask('default', ['uglify']);
+  grunt.registerTask('static', ['less']);
 
 };

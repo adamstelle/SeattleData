@@ -3,21 +3,23 @@ var express = require("express");
 var app     = express();
 var path    = require('path');
 var port    = process.env.PORT || 3000;
+
+// set up handlerbars view engine
 var handlebars = require("express-handlebars").create({
   defaultLayout: "main",
   helpers: {
     static: function(name) {
-      return require('.lib/static.js').map(name);
+      return require('./lib/static.js').map(name);
     }
   }
 });
-
 app.engine("handlebars", handlebars.engine);
 app.set("view engine", "handlebars");
 
-// Routes for CSS & JS files
-app.use("/stylesheets", express.static(__dirname + "/public/stylesheets"));
-app.use("/js", express.static(__dirname + "/public/js"));
+// // Routes for CSS & JS files
+// app.use("/stylesheets", express.static(__dirname + "/public/stylesheets"));
+// app.use("/js", express.static(__dirname + "/public/js"));
+app.use(express.static('public'));
 
 app.get('/', function(req, res) {
     res.render("index", {
