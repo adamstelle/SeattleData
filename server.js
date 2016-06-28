@@ -1,59 +1,40 @@
-var http    = require('http');
-var fs      = require('fs');
-var path    = require('path');
-var mime    = require('mime');
-var cache   = {};
-// var content = require("./package.json");
 var jquery  = require("./public/js/jquery-3.0.0.min.js");
-var Socrata = require("node-socrata");
+// var Socrata = require("node-socrata");
+var express = require("express");
+var app     = express();
+var path    = require('path');
+var port    = process.env.PORT || 3000;
 
-var server = http.createServer(function(request, response) {
-  var filePath = false;
-
-  if (request.url == '/') {
-    filePath = 'public/index.html';
-  } else {
-    filePath = 'public' + request.url;
-  }
-  var absPath = './' + filePath;
-  serveStatic(response, cache, absPath);
+app.get('/', function(req, res) {
+    res.sendFile(path.join(__dirname + '/public/index.html'));
 });
 
-function serveStatic(response, cache, absPath) {
-  if (cache[absPath]) {
-    sendFile(response, absPath, cache[absPath]);
-  } else {
-    fs.exists(absPath, function(exists) {
-      if (exists) {
-        fs.readFile(absPath, function(err, data) {
-          if (err) {
-            send404(response);
-          } else {
-            cache[absPath] = data;
-            sendFile(response, absPath, data);
-          }
-        });
-      } else {
-        send404(response);
-      }
-    });
-  }
-}
+app.use("/stylesheets", express.static(__dirname + "/public/stylesheets"));
 
-server.listen(3000, function() {
-  console.log("Server listening on port 3000.");
+app.use("/js", express.static(__dirname + "/public/js"));
+
+// Custom 404 page
+app.use(function(req, res){
+  res.type("text/plain");
+  res.status(404);
+  res.send("404 - Not Found");
 });
 
-function send404(response) {
-  response.writeHead(404, {'Content-Type': 'text/plain'});
-  response.write('Error 404: Resource not found.');
-  response.end();
+app.use(function(err, req, res, next){
+  console.error(err.stack);
+  res.type("text/plain");
+  res.status(500);
+  res.send("500 - Server Error");
+});
+
+function getURL(startDate, endDate) {
+  req.param.startDate;
+  var fullParam = "/fire/dates?start="+startDate+"%end="+endDate+"";
+  req.body
 }
 
-function sendFile(response, filePath, fileContents) {
-  response.writeHead(
-    200,
-    {"content-type": mime.lookup(path.basename(filePath))}
-  );
-  response.end(fileContents);
-}
+app.listen(port);
+console.log('Server started! At http://localhost:' + port);
+// app.listen(app.get("port"), function(){
+//   console.log("Express started on http://localhost:" + app.get('port') + "; press Ctrl-C to terminate.");
+// });

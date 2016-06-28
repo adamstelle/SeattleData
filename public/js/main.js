@@ -43,6 +43,9 @@ $("#datesubmit").on("click", function() {
     + "\" AND datetime < \""
     + inputMax + "\"";
   getSodaData(apiCall);
+
+  // Modify URL parameters
+
 });
 
 function getSodaData(apiCall) {
