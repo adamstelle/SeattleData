@@ -42,8 +42,9 @@ $("#datesubmit").on("click", function() {
     + inputMin
     + "\" AND datetime < \""
     + inputMax + "\"";
-  getSodaData(apiCall);
 
+  getSodaData(apiCall);
+  console.log(apiCall);
   // Modify URL parameters
 
 });
@@ -57,9 +58,24 @@ function getSodaData(apiCall) {
       }
     });
     var myjson = data;
+    changeURL(inputMin, inputMax);
     countResults(myjson);
     $("#downloadButton").fadeIn();
     $("#seeDataButton").fadeIn();
+  });
+}
+
+function changeURL(startDate, endDate) {
+  window.history.pushState("Test", "Title", "/fire/dates?start="+startDate+"%end="+endDate+"");
+  console.log("changed url params to "+startDate+ " and "+endDate+ ".");
+}
+
+function getURL() {
+  app.get("/fire/dates", function(req, res) {
+    var startDate = req.param("startDate");
+    var endDate   = req.param("endDate");
+    var fullParam = "/fire/dates?start="+startDate+"%end="+endDate+"";
+    res.send()
   });
 }
 
@@ -67,7 +83,6 @@ $("#seeDataButton").on("click", function() {
   $(".tableContainer").fadeIn();
   $(".tableContainer").slideDown(1200);
 });
-
 
 $("#downloadButton").on("click", function(e) {
   var csvURL = baseURL

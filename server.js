@@ -5,13 +5,14 @@ var app     = express();
 var path    = require('path');
 var port    = process.env.PORT || 3000;
 
+// Routes for CSS & JS files
+app.use("/stylesheets", express.static(__dirname + "/public/stylesheets"));
+app.use("/js", express.static(__dirname + "/public/js"));
+
+
 app.get('/', function(req, res) {
     res.sendFile(path.join(__dirname + '/public/index.html'));
 });
-
-app.use("/stylesheets", express.static(__dirname + "/public/stylesheets"));
-
-app.use("/js", express.static(__dirname + "/public/js"));
 
 // Custom 404 page
 app.use(function(req, res){
@@ -27,14 +28,8 @@ app.use(function(err, req, res, next){
   res.send("500 - Server Error");
 });
 
-function getURL(startDate, endDate) {
-  req.param.startDate;
-  var fullParam = "/fire/dates?start="+startDate+"%end="+endDate+"";
-  req.body
-}
+
+
 
 app.listen(port);
 console.log('Server started! At http://localhost:' + port);
-// app.listen(app.get("port"), function(){
-//   console.log("Express started on http://localhost:" + app.get('port') + "; press Ctrl-C to terminate.");
-// });
