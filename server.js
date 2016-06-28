@@ -14,6 +14,10 @@ app.get('/', function(req, res) {
     res.sendFile(path.join(__dirname + '/public/index.html'));
 });
 
+app.get(/^\/fire\//, function(req, res) {
+    res.sendFile(path.join(__dirname + './public/index.html'));
+});
+
 // Custom 404 page
 app.use(function(req, res){
   res.type("text/plain");
@@ -28,8 +32,15 @@ app.use(function(err, req, res, next){
   res.send("500 - Server Error");
 });
 
-
-
+function getURL() {
+  app.get("/fire/dates", function(req, res) {
+    var startDate = req.param("start");
+    var endDate   = req.param("end");
+    var fullParam = "/fire/dates?start="+startDate+"%end="+endDate+"";
+    console.log(fullParam);
+    res.send(fullParam);
+  });
+}
 
 app.listen(port);
-console.log('Server started! At http://localhost:' + port);
+getURL();

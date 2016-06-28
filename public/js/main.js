@@ -1,7 +1,6 @@
 $("#downloadButton").hide();
 $("#seeDataButton").hide();
 $(".tableContainer").hide();
-
 // Get today's date
 var today = new Date().toJSON().slice(0,10);
 var numDays;
@@ -66,17 +65,7 @@ function getSodaData(apiCall) {
 }
 
 function changeURL(startDate, endDate) {
-  window.history.pushState("Test", "Title", "/fire/dates?start="+startDate+"%end="+endDate+"");
-  console.log("changed url params to "+startDate+ " and "+endDate+ ".");
-}
-
-function getURL() {
-  app.get("/fire/dates", function(req, res) {
-    var startDate = req.param("startDate");
-    var endDate   = req.param("endDate");
-    var fullParam = "/fire/dates?start="+startDate+"%end="+endDate+"";
-    res.send()
-  });
+  window.history.pushState("ChangeDates", "Title", "/fire/dates?start="+startDate+"%end="+endDate+"");
 }
 
 $("#seeDataButton").on("click", function() {
