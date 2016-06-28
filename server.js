@@ -1,17 +1,28 @@
 var jquery  = require("./public/js/jquery-3.0.0.min.js");
-// var Socrata = require("node-socrata");
 var express = require("express");
 var app     = express();
 var path    = require('path');
 var port    = process.env.PORT || 3000;
+var handlebars = require("express-handlebars").create({
+  defaultLayout: "main",
+  helpers: {
+    static: function(name) {
+      return require('.lib/static.js').map(name);
+    }
+  }
+});
+
+app.engine("handlebars", handlebars.engine);
+app.set("view engine", "handlebars");
 
 // Routes for CSS & JS files
 app.use("/stylesheets", express.static(__dirname + "/public/stylesheets"));
 app.use("/js", express.static(__dirname + "/public/js"));
 
-
 app.get('/', function(req, res) {
-    res.sendFile(path.join(__dirname + '/public/index.html'));
+    res.render("index", {
+        currentYear: new Date().getFullYear()
+    });
 });
 
 app.get(/^\/fire\//, function(req, res) {
