@@ -4,6 +4,8 @@ $(".tableContainer").hide();
 // Get today's date
 var today = new Date().toJSON().slice(0,10);
 var numDays;
+var urlHash = window.location.hash;
+// Check if URL parameters exist; if so trigger query
 
 $("#slider").dateRangeSlider({
   bounds:{
@@ -16,25 +18,44 @@ $("#slider").dateRangeSlider({
   }
 });
 
-$("#datesubmit").on("click", function() {
-  // Base SODA endpoint
-  baseURL = "https://data.seattle.gov/resource/grwu-wqtk";
+if (urlHash) {
+  console.log("hash present");
+  getHash();
+}
 
-  // Retrieve selected dates from slider
-  inputMax = $("#slider").dateRangeSlider("max");
-  inputMin = $("#slider").dateRangeSlider("min");
+function getHash() {
+  var datehash = location.hash.substr(1);
+  var inputMin = datehash.match(/start=(.*)%/).pop();
+  var inputMax = datehash.match(/end=(.*)/).pop();
+  // setSliderDates(inputMin, inputMax);
+  $("#slider").dateRangeSlider("values", new Date(inputMin), new Date(inputMax));
+  getAPI(inputMin, inputMax);
+}
 
-  // Calculate number of days in range
-  numDays = Math.round((inputMax - inputMin)/(1000*60*60*24))
 
-  // Format min & max into SODA format
-  inputMax = moment(inputMax)
-    .add(1, "days")
-    .format("YYYY-MM-DD");
+$("#datesubmit").on("click", function getInput() {
+// Retrieve selected dates from slider
+inputMax = $("#slider").dateRangeSlider("max");
+inputMin = $("#slider").dateRangeSlider("min");
 
-  inputMin = moment(inputMin)
+// Calculate number of days in range
+numDays = Math.round((inputMax - inputMin)/(1000*60*60*24))
+
+// Format min & max into SODA format
+inputMax = moment(inputMax)
+  .add(1, "days")
   .format("YYYY-MM-DD");
 
+inputMin = moment(inputMin)
+.format("YYYY-MM-DD");
+
+getAPI(inputMin, inputMax);
+});
+
+
+function getAPI(inputMin, inputMax) {
+  // Base SODA endpoint
+  var baseURL = "https://data.seattle.gov/resource/grwu-wqtk";
   // Build API call
   var apiCall = baseURL
     + ".json?$limit=100000&$where=datetime >= \""
@@ -43,21 +64,20 @@ $("#datesubmit").on("click", function() {
     + inputMax + "\"";
 
   getSodaData(apiCall);
-  console.log(apiCall);
-  // Modify URL parameters
-
-});
+  changeURL(inputMin, inputMax);
+}
 
 function getSodaData(apiCall) {
   $.getJSON(apiCall, function(data) {
-    var items = [];
     $("#my-final-table").dynatable({
+      table: {
+        defaultColumnIdStyle: 'trimDash',
+      },
       dataset: {
         records: data
       }
     });
     var myjson = data;
-    changeURL(inputMin, inputMax);
     countResults(myjson);
     $("#downloadButton").fadeIn();
     $("#seeDataButton").fadeIn();
@@ -65,7 +85,7 @@ function getSodaData(apiCall) {
 }
 
 function changeURL(startDate, endDate) {
-  window.history.pushState("ChangeDates", "Title", "/fire/dates?start="+startDate+"%end="+endDate+"");
+  window.location.hash = "/fire/dates?start="+startDate+"%end="+endDate+"";
 }
 
 $("#seeDataButton").on("click", function() {
@@ -99,11 +119,6 @@ function countResults(myjson) {
 function sortResults(counts) {
   var sortable = [];
   var totalResponses = 0;
-  var firstplace = {},
-  secondplace = {},
-  thirdplace = {},
-  fourthplace = {},
-  fifthplace = {};
   for (var item in counts)
     sortable.push([item, counts[item]])
     sortable.sort(
@@ -117,51 +132,21 @@ function sortResults(counts) {
   for (j = 0; j < i; j++) {
     totalIncidents += sortable[j][1];
   }
-  console.log(totalIncidents);
-  firstplace.key = sortable[i-1][0];
-  firstplace.value=sortable[i-1][1];
-  firstplace.percent=Math.round((sortable[i-1][1]/totalIncidents) * 1000)/10;
-  secondplace.key = sortable[i-2][0];
-  secondplace.value=sortable[i-2][1];
-  secondplace.percent=Math.round((sortable[i-2][1]/totalIncidents) * 1000)/10;
-  thirdplace.key = sortable[i-3][0];
-  thirdplace.value=sortable[i-3][1];
-  thirdplace.percent=Math.round((sortable[i-3][1]/totalIncidents) * 1000)/10;
-  fourthplace.key = sortable[i-4][0];
-  fourthplace.value=sortable[i-4][1];
-  fourthplace.percent=Math.round((sortable[i-4][1]/totalIncidents) * 1000)/10;
-  fifthplace.key = sortable[i-5][0];
-  fifthplace.value=sortable[i-5][1];
-  fifthplace.percent=Math.round((sortable[i-5][1]/totalIncidents) * 1000)/10;
+
+  var testArray = [first = {},second = {},third = {},fourth = {} ,fifth = {}];
 
   // Display results on page
-
-  $("#total").append("<h4>In this period, the Seattle Fire Department responded to <span id='totalpercent' class='percent'></span> calls. Below is a breakdown of the most common reasons for fire trucks leaving the station.</h4>");
+  $("#total").html("<h4>In this period, the Seattle Fire Department responded to <span id='totalpercent' class='percent'></span> calls. Below is a breakdown of the most common reasons for fire trucks leaving the station.</h4>");
   $("#totalpercent").append(totalIncidents);
 
-  $("#first").children(".resultTitle").append(firstplace.key);
-  $("#first").children(".percent").append(""+firstplace.percent+"<span class='percentSign'>%</span>");
-  $("#first").append(""+firstplace.value+"  total incidents.");
+  for (k = 0; k <testArray.length; k++) {
+    testArray[k].name    = "place"+(k+1)+"",
+    testArray[k].key     = sortable[i-(k+1)][0],
+    testArray[k].value   = sortable[i-(k+1)][1],
+    testArray[k].percent = Math.round((sortable[i-(k+1)][1]/totalIncidents) * 1000)/10;
 
-  $("#second").children(".resultTitle").append(secondplace.key);
-  $("#second").children(".percent").append(""+secondplace.percent+"<span class='percentSign'>%</span>");
-  $("#second").append(""+secondplace.value+"  total incidents.");
-
-  $("#third").children(".resultTitle").append(thirdplace.key);
-  $("#third").children(".percent").append(""+thirdplace.percent+"<span class='percentSign'>%</span>");
-  $("#third").append(""+thirdplace.value+"  total incidents.");
-
-  $("#fourth").children(".resultTitle").append(fourthplace.key);
-  $("#fourth").children(".percent").append(""+fourthplace.percent+"<span class='percentSign'>%</span>");
-  $("#fourth").append(""+fourthplace.value+"  total incidents.");
-
-  $("#fifth").children(".resultTitle").append(fifthplace.key);
-  $("#fifth").children(".percent").append(""+fifthplace.percent+"<span class='percentSign'>%</span>");
-  $("#fifth").append(""+fifthplace.value+"  total incidents.");
-
-  // $("#first").append(firstplace.key + firstplace.percent + firstplace.value+" total votes.");
-  // $("#second").append(secondplace.key + secondplace.percent + secondplace.value+" total votes.");
-  // $("#third").append(thirdplace.key + thirdplace.percent + thirdplace.value+" total votes.");
-  // $("#fourth").append(fourthplace.key + fourthplace.percent + fourthplace.value+" total votes.");
-  // $("#fifth").append(fifthplace.key + fifthplace.percent + fifthplace.value+" total votes.");
+    $("#"+testArray[k].name+" > .resultTitle").html(testArray[k].key);
+    $("#"+testArray[k].name+" > .percent").html(""+testArray[k].percent+"<span class='percentSign'>%</span>");
+    $("#"+testArray[k].name+" > .totals").html(""+testArray[k].value+"  total incidents.");
+  }
 }

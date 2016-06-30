@@ -53,7 +53,7 @@
       perPageSelect: true
     },
     table: {
-      defaultColumnIdStyle: 'camelCase',
+      defaultColumnIdStyle: 'trimDash',
       columns: null,
       headRowSelector: 'thead tr', // or e.g. tr:first-child
       bodyRowSelector: 'tbody tr',
