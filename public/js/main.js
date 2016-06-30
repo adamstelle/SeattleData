@@ -5,6 +5,8 @@ $(".tableContainer").hide();
 var today = new Date().toJSON().slice(0,10);
 var numDays;
 var urlHash = window.location.hash;
+// Base SODA endpoint
+var baseURL = "https://data.seattle.gov/resource/grwu-wqtk";
 // Check if URL parameters exist; if so trigger query
 
 $("#slider").dateRangeSlider({
@@ -54,8 +56,6 @@ getAPI(inputMin, inputMax);
 
 
 function getAPI(inputMin, inputMax) {
-  // Base SODA endpoint
-  var baseURL = "https://data.seattle.gov/resource/grwu-wqtk";
   // Build API call
   var apiCall = baseURL
     + ".json?$limit=100000&$where=datetime >= \""
@@ -64,7 +64,7 @@ function getAPI(inputMin, inputMax) {
     + inputMax + "\"";
 
   getSodaData(apiCall);
-  changeURL(inputMin, inputMax);
+  changeURL(inputMin, inputMax, baseURL);
 }
 
 function getSodaData(apiCall) {
@@ -84,7 +84,7 @@ function getSodaData(apiCall) {
   });
 }
 
-function changeURL(startDate, endDate) {
+function changeURL(startDate, endDate, baseURL) {
   window.location.hash = "/fire/dates?start="+startDate+"%end="+endDate+"";
 }
 
