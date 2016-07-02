@@ -50,20 +50,19 @@ inputMax = moment(inputMax)
 
 inputMin = moment(inputMin)
 .format("YYYY-MM-DD");
-
 getAPI(inputMin, inputMax);
 });
 
 
 function getAPI(inputMin, inputMax) {
   // Build API call
-  var apiCall = baseURL
+  apiCall = baseURL
     + ".json?$limit=100000&$where=datetime >= \""
     + inputMin
     + "\" AND datetime < \""
     + inputMax + "\"";
-
   getSodaData(apiCall);
+  geoJSON(inputMin, inputMax);
   changeURL(inputMin, inputMax, baseURL);
 }
 
@@ -149,4 +148,27 @@ function sortResults(counts) {
     $("#"+testArray[k].name+" > .percent").html(""+testArray[k].percent+"<span class='percentSign'>%</span>");
     $("#"+testArray[k].name+" > .totals").html(""+testArray[k].value+"  total incidents.");
   }
+}
+
+var mymap = L.map("map", {
+  center: [47.6062, -122.3321],
+  zoom: 12,
+  scrollWheelZoom: false
+});
+
+// Load map
+L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/light-v9/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoiYWRhbXN0ZWxsZSIsImEiOiJjaXE1Y2JyYWkwMDU0ZmxtNnpxYmxnaDlwIn0.4Uq9e1A2t0jjoQQ_oyF_fQ', {
+    attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+    maxZoom: 18,
+    id: 'mapbox://styles/mapbox/light-v9',
+}).addTo(mymap);
+
+function geoJSON(inputMin, inputMax) {
+  var geoCall = baseURL
+    + ".geojson?$limit=100000&$where=datetime >= \""
+    + inputMin
+    + "\" AND datetime < \""
+    + inputMax + "\"";
+
+  console.log(geoCall);
 }

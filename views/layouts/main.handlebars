@@ -6,11 +6,12 @@
   <link rel="stylesheet" href="{{static './stylesheets/iThing.css'}}">
   <link rel="stylesheet" href="{{static './stylesheets/jquery.dynatable.css'}}">
   <link rel="stylesheet" href="{{static './stylesheets/unsemantic-grid.css'}}">
+  <link rel ="stylesheet" href ="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css">
 </head>
 <body>
   <div id="wrapper">
     {{{body}}}
-    {{> content}}
+    {{> map}}
   </div>
   <footer class="grid-100 mobile-grid-100">
     <p>Built with love by <a href="http://stelle.me/">Adam Stelle</a> - {{currentYear}} </p>
@@ -20,8 +21,7 @@
   <script src="js/jQAllRangeSliders-min.js"></script>
   <script src="js/jquery.dynatable.js"></script>
   <script src="js/moment.js"></script>
+  <script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
   <script src="js/main.js"></script>
-  <script src="http://d3js.org/d3.v3.min.js"></script>
-  <script src="http://d3js.org/topojson.v0.min.js"></script>
 </body>
 </html>
