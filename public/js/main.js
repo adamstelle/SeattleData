@@ -62,7 +62,7 @@ function getAPI(inputMin, inputMax) {
     + "\" AND datetime < \""
     + inputMax + "\"";
   getSodaData(apiCall);
-  geoJSON(inputMin, inputMax);
+  addMarkers(apiCall);
   changeURL(inputMin, inputMax, baseURL);
 }
 
@@ -77,6 +77,7 @@ function getSodaData(apiCall) {
       }
     });
     var myjson = data;
+    addMarkers(myjson);
     countResults(myjson);
     $("#downloadButton").fadeIn();
     $("#seeDataButton").fadeIn();
@@ -163,12 +164,21 @@ L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/light-v9/tiles/256/{z}/{x}/
     id: 'mapbox://styles/mapbox/light-v9',
 }).addTo(mymap);
 
-function geoJSON(inputMin, inputMax) {
-  var geoCall = baseURL
-    + ".geojson?$limit=100000&$where=datetime >= \""
-    + inputMin
-    + "\" AND datetime < \""
-    + inputMax + "\"";
-
-  console.log(geoCall);
+function addMarkers(myjson) {
+  var myArr = $.map(myjson, function(el) {return el});
+  for(i in myArr){
+    L.marker(L.latLng(myArr[i]["latitude"],myArr[i]["longitude"])).addTo(mymap);
+  }
 }
+
+// function geoJSON(inputMin, inputMax) {
+//   var geoCall = baseURL
+//     + ".geojson?$limit=100000&$where=datetime >= \""
+//     + inputMin
+//     + "\" AND datetime < \""
+//     + inputMax + "\"";
+//
+//   console.log(geoCall);
+//
+//   var myGeoJSON
+// }
