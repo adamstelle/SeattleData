@@ -1,9 +1,5 @@
-<div id='content'>
-  <div class="page-header">
-    <h1 class="title">Seattle Fire Services</h1>
-    <h2>Tracking our fire trucks since 2016.</h2>
-  </div>
-  <div class="selectDates">
+<main id="fire">
+  <div class="selectDates grid-100">
     <h3>Choose a date range using the slider, then click submit</h3>
     <p>This widget takes the date range provided and returns a table of all Seattle fire departmnent emergency response requests.</p>
     <div id="slider"></div><br/>
@@ -24,8 +20,8 @@
   <div class= "tableContainer">
     <table id="my-final-table" class="table table-bordered">
       <thead>
-        <th data-dynatable-column="type"="type">Type of Incident</th>
-        <th data-dynatable-column="address">Address</th>
+        <th data-dynatable-column="type">Type of Incident</th>
+        <th data-dynatable-column="address">Location</th>
         <th data-dynatable-column="datetime">Time & Date</th>
         <th data-dynatable-column="incident_number">Incident Number</th>
         <th data-dynatable-column="latitude">Latitude</th>
@@ -35,4 +31,4 @@
       </tbody>
     </table>
   </div>
-</div>
+</main>

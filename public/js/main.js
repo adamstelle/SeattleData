@@ -5,24 +5,41 @@ $(".tableContainer").hide();
 var today = new Date().toJSON().slice(0,10);
 var numDays;
 var urlHash = window.location.hash;
-// Base SODA endpoint
-var baseURL = "https://data.seattle.gov/resource/grwu-wqtk";
-// Check if URL parameters exist; if so trigger query
+var baseURL;
+var currentService;
+var type;
+var dateHeader;
+
+// Set base SODA endpoint
+if ($("main").is("#police")) {
+  console.log("police page");
+  baseURL         = "https://data.seattle.gov/resource/pu5n-trf4";
+  currentService  = "police";
+  type            = "event_clearance_subgroup";
+  dateHeader      = "event_clearance_date";
+} else {
+  baseURL         = "https://data.seattle.gov/resource/grwu-wqtk";
+  currentService  = "fire";
+  type            = "type";
+  dateHeader      = "datetime";
+}
 
 $("#slider").dateRangeSlider({
   bounds:{
-    min: new Date(2011, 01, 01),
+    min: new Date(2016, 01, 01),
     max: new Date(today)
   },
   defaultValues:{
-    min: new Date(2015, 00, 01),
-    max: new Date(2016, 00, 01)
+    min: new Date(2016, 05, 01),
+    max: new Date(today)
   }
 });
 
+// Check if URL parameters exist; if so trigger query
 if (urlHash) {
-  console.log("hash present");
-  getHash();
+  if(location.hash.indexOf("dates") > -1) {
+    getHash();
+  }
 }
 
 function getHash() {
@@ -34,38 +51,45 @@ function getHash() {
   getAPI(inputMin, inputMax);
 }
 
-
 $("#datesubmit").on("click", function getInput() {
-// Retrieve selected dates from slider
-inputMax = $("#slider").dateRangeSlider("max");
-inputMin = $("#slider").dateRangeSlider("min");
+  // Retrieve selected dates from slider
+  inputMax = $("#slider").dateRangeSlider("max");
+  inputMin = $("#slider").dateRangeSlider("min");
 
-// Calculate number of days in range
-numDays = Math.round((inputMax - inputMin)/(1000*60*60*24))
+  // Format min & max into SODA format
+  inputMax = moment(inputMax)
+    .add(1, "days")
+    .format("YYYY-MM-DD");
 
-// Format min & max into SODA format
-inputMax = moment(inputMax)
-  .add(1, "days")
+  inputMin = moment(inputMin)
   .format("YYYY-MM-DD");
-
-inputMin = moment(inputMin)
-.format("YYYY-MM-DD");
-getAPI(inputMin, inputMax);
+  getAPI(inputMin, inputMax);
 });
 
-
-function getAPI(inputMin, inputMax) {
-  // Build API call
-  apiCall = baseURL
-    + ".json?$limit=100000&$where=datetime >= \""
-    + inputMin
-    + "\" AND datetime < \""
-    + inputMax + "\"";
-  getSodaData(apiCall);
-  changeURL(inputMin, inputMax, baseURL);
+// Build API call
+function getAPI(inputMin, inputMax, numDays) {
+  console.log("calling API for " + currentService);
+  if(currentService == "fire") {
+    apiCall = baseURL
+      + ".json?$limit=100000&$where=datetime >= \""
+      + inputMin
+      + "\" AND datetime < \""
+      + inputMax + "\"";
+  } else {
+    apiCall = baseURL
+      + ".json?$limit=100000&$where=event_clearance_date >= \""
+      + inputMin
+      + "\" AND event_clearance_date < \""
+      + inputMax + "\"";
+  }
+  // Modify URL Hash
+  window.location.hash = "/dates?start="+inputMin+"%end="+inputMax+"";
+  // Calculate number of days in range
+  numDays = (new Date(inputMax)-new Date(inputMin))/(1000*60*60*24);
+  getSodaData(apiCall, numDays);
 }
 
-function getSodaData(apiCall) {
+function getSodaData(apiCall, numDays) {
   $.getJSON(apiCall, function(data) {
     $("#my-final-table").dynatable({
       table: {
@@ -76,15 +100,11 @@ function getSodaData(apiCall) {
       }
     });
     var myjson = data;
-    countResults(myjson);
+    countResults(myjson, numDays);
     $("#downloadButton").fadeIn();
     $("#seeDataButton").fadeIn();
     addMarkers(myjson);
   });
-}
-
-function changeURL(startDate, endDate, baseURL) {
-  window.location.hash = "/fire/dates?start="+startDate+"%end="+endDate+"";
 }
 
 $("#seeDataButton").on("click", function() {
@@ -102,22 +122,29 @@ $("#downloadButton").on("click", function(e) {
   window.location.href = csvURL;
 });
 
-function countResults(myjson) {
+function countResults(myjson, numDays) {
   var counts = {};
   var objects = myjson;
-  objects.forEach(function (o) {
-    if (!counts.hasOwnProperty(o.type)) {
-      counts[o.type] = 0;
-    }
-    counts[o.type] += 1;
-  });
-  console.log(counts);
-  sortResults(counts);
+  if (currentService == "fire") {
+    objects.forEach(function (o) {
+      if (!counts.hasOwnProperty(o.type)) {
+        counts[o.type] = 0;
+      }
+      counts[o.type] += 1;
+    });
+  } else {
+    objects.forEach(function (o) {
+      if (!counts.hasOwnProperty(o.event_clearance_subgroup)) {
+        counts[o.event_clearance_subgroup] = 0;
+      }
+      counts[o.event_clearance_subgroup] += 1;
+    });
+  }
+  sortResults(counts, numDays);
 }
 
-function sortResults(counts) {
+function sortResults(counts, numDays) {
   var sortable = [];
-  var totalResponses = 0;
   for (var item in counts)
     sortable.push([item, counts[item]])
     sortable.sort(
@@ -131,22 +158,20 @@ function sortResults(counts) {
   for (j = 0; j < i; j++) {
     totalIncidents += sortable[j][1];
   }
-
-  var testArray = [first = {},second = {},third = {},fourth = {} ,fifth = {}];
+  var domArray = [first = {},second = {},third = {},fourth = {} ,fifth = {}];
 
   // Display results on page
-  $("#total").html("<h4>In this period, the Seattle Fire Department responded to <span id='totalpercent' class='percent'></span> calls. Below is a breakdown of the most common reasons for fire trucks leaving the station.</h4>");
+  $("#total").html("<h4>In the last <span class='boldblue percent'>"+numDays+"</span> days, the Seattle "+currentService+" Department responded to <span id='totalpercent' class='boldblue percent'></span> calls. Below is a breakdown of the most common reasons for fire trucks leaving the station.</h4>");
   $("#totalpercent").append(totalIncidents);
 
-  for (k = 0; k <testArray.length; k++) {
-    testArray[k].name    = "place"+(k+1)+"",
-    testArray[k].key     = sortable[i-(k+1)][0],
-    testArray[k].value   = sortable[i-(k+1)][1],
-    testArray[k].percent = Math.round((sortable[i-(k+1)][1]/totalIncidents) * 1000)/10;
-
-    $("#"+testArray[k].name+" > .resultTitle").html(testArray[k].key);
-    $("#"+testArray[k].name+" > .percent").html(""+testArray[k].percent+"<span class='percentSign'>%</span>");
-    $("#"+testArray[k].name+" > .totals").html(""+testArray[k].value+"  total incidents.");
+  for (k = 0; k <domArray.length; k++) {
+    domArray[k].name    = "place"+(k+1)+"",
+    domArray[k].key     = sortable[i-(k+1)][0],
+    domArray[k].value   = sortable[i-(k+1)][1],
+    domArray[k].percent = Math.round((sortable[i-(k+1)][1]/totalIncidents) * 1000)/10;
+    $("#"+domArray[k].name+" > .resultTitle").html(domArray[k].key);
+    $("#"+domArray[k].name+" > .percent").html(""+domArray[k].percent+"<span class='percentSign'>%</span>");
+    $("#"+domArray[k].name+" > .totals").html(""+domArray[k].value+"  total incidents.");
   }
 }
 
@@ -163,10 +188,10 @@ L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/light-v9/tiles/256/{z}/{x}/
     id: 'mapbox://styles/mapbox/light-v9',
 }).addTo(mymap);
 
-// Add markers to map
+// Add 300 most recent incidents to map
 function addMarkers(myjson) {
   var myArr = $.map(myjson, function(el) {return el});
-  for(i in myArr){
-    L.marker(L.latLng(myArr[i]["latitude"],myArr[i]["longitude"])).addTo(mymap);
+  for(i=myArr.length-1; i>myArr.length-300; i--) {
+      L.marker(L.latLng(myArr[i]["latitude"],myArr[i]["longitude"])).addTo(mymap);
   }
 }

@@ -2,6 +2,7 @@ var jquery  = require("./public/js/jquery-3.0.0.min.js");
 var express = require("express");
 var app     = express();
 var path    = require('path');
+var table   = require("./lib/table.js");
 var port    = process.env.PORT || 3000;
 
 // set up handlerbars view engine
@@ -13,22 +14,28 @@ var handlebars = require("express-handlebars").create({
     }
   }
 });
+
 app.engine("handlebars", handlebars.engine);
 app.set("view engine", "handlebars");
 
-// // Routes for CSS & JS files
-// app.use("/stylesheets", express.static(__dirname + "/public/stylesheets"));
-// app.use("/js", express.static(__dirname + "/public/js"));
 app.use(express.static('public'));
 
-app.get('/', function(req, res) {
-    res.render("index", {
-        currentYear: new Date().getFullYear()
+app.get(['/','/police'], function(req, res) {
+    res.render("police", {
+        currentYear : new Date().getFullYear(),
+        service     : "Police",
+        logo        : '<input type="image" id="badge" src="./images/SPD.jpg"/>',
+        switchLink  : '<a class="btn btn-primary red" id="service" type="submit" href="./fire">Switch to Fire Data</a>'
     });
 });
 
-app.get(/^\/fire\//, function(req, res) {
-    res.sendFile(path.join(__dirname + './public/index.html'));
+app.get('/fire', function(req, res) {
+    res.render("fire", {
+        currentYear : new Date().getFullYear(),
+        service     : "Fire",
+        logo        : '<input type="image" id="badge" src="./images/SFD.jpg"/>',
+        switchLink  : '<a class="btn btn-primary" id="service" type="submit" href="./police">Switch to Police Data</a>'
+    });
 });
 
 // Custom 404 page
@@ -45,15 +52,4 @@ app.use(function(err, req, res, next){
   res.send("500 - Server Error");
 });
 
-function getURL() {
-  app.get("/fire/dates", function(req, res) {
-    var startDate = req.param("start");
-    var endDate   = req.param("end");
-    var fullParam = "/fire/dates?start="+startDate+"%end="+endDate+"";
-    console.log(fullParam);
-    res.send(fullParam);
-  });
-}
-
 app.listen(port);
-getURL();

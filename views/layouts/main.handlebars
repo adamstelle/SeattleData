@@ -10,8 +10,18 @@
 </head>
 <body>
   <div id="wrapper">
-    {{{body}}}
-    {{> map}}
+    <div class="page-header">
+      <div class="grid-50">
+        <h1 class="title">Seattle {{service}} Services Tracker</h1>
+        <h2>Tracking our {{service}} Trucks Since 2016.</h2>
+      </div>
+      <div id="headerbutton" class="grid-50 mobile-grid-100">
+        {{{logo}}}
+        {{{switchLink}}}
+      </div>
+    </div>
+      {{{body}}}
+      {{> map}}
   </div>
   <footer class="grid-100 mobile-grid-100">
     <p>Built with love by <a href="http://stelle.me/">Adam Stelle</a> - {{currentYear}} </p>
