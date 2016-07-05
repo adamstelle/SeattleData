@@ -46,7 +46,6 @@ function getHash() {
   var datehash = location.hash.substr(1);
   var inputMin = datehash.match(/start=(.*)%/).pop();
   var inputMax = datehash.match(/end=(.*)/).pop();
-  // setSliderDates(inputMin, inputMax);
   $("#slider").dateRangeSlider("values", new Date(inputMin), new Date(inputMax));
   getAPI(inputMin, inputMax);
 }
@@ -69,19 +68,12 @@ $("#datesubmit").on("click", function getInput() {
 // Build API call
 function getAPI(inputMin, inputMax, numDays) {
   console.log("calling API for " + currentService);
-  if(currentService == "fire") {
-    apiCall = baseURL
-      + ".json?$limit=100000&$where=datetime >= \""
-      + inputMin
-      + "\" AND datetime < \""
-      + inputMax + "\"";
-  } else {
-    apiCall = baseURL
-      + ".json?$limit=100000&$where=event_clearance_date >= \""
-      + inputMin
-      + "\" AND event_clearance_date < \""
-      + inputMax + "\"";
-  }
+  apiCall = baseURL
+    + ".json?$limit=100000&$where="+dateHeader+" >= \""
+    + inputMin
+    + "\" AND "+dateHeader+" < \""
+    + inputMax + "\"";
+  console.log(apiCall);
   // Modify URL Hash
   window.location.hash = "/dates?start="+inputMin+"%end="+inputMax+"";
   // Calculate number of days in range
@@ -114,10 +106,10 @@ $("#seeDataButton").on("click", function() {
 
 $("#downloadButton").on("click", function(e) {
   var csvURL = baseURL
-    + ".csv?$where=datetime >= \""
-    + inputMin
-    + "\" AND datetime < \""
-    + inputMax + "\"";
+    + ".csv?$where="+dateHeader+" >= \""
+    + location.hash.substr(1).match(/start=(.*)%/).pop()
+    + "\" AND "+dateHeader+" < \""
+    + location.hash.substr(1).match(/end=(.*)/).pop() + "\"";
   e.preventDefault();
   window.location.href = csvURL;
 });
