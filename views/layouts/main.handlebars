@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1"/>
   <link rel="stylesheet" href="{{static './stylesheets/bootstrap.min.css'}}">
   <link rel="stylesheet" href="{{static './stylesheets/main.css'}}">
   <link rel="stylesheet" href="{{static './stylesheets/iThing.css'}}">
@@ -10,23 +11,23 @@
 </head>
 <body>
   <div id="wrapper">
-    <div class="page-header">
-      <div class="grid-50">
+      <div id="nav" class="grid-100">
+        {{{switchLink}}}
+      </div>
+      <div class="grid-70">
         <h1 class="title">Seattle {{service}} Services Tracker</h1>
         <h2>Tracking our {{service}} Trucks Since 2016.</h2>
       </div>
-      <div id="headerbutton" class="grid-50 mobile-grid-100">
+      <div class="grid-30 mobile-grid-100">
         {{{logo}}}
-        {{{switchLink}}}
       </div>
-    </div>
     <div class="selectDates grid-100">
       <h3>Choose a date range using the slider, then click submit</h3>
-      <p>This widget takes the date range provided and returns a table of all Seattle fire departmnent emergency response requests.</p>
+      <p>This widget takes the date range provided and returns a table of all Seattle {{service}} departmnent emergency response requests.</p>
       <div id="slider"></div><br/>
       <button type="button" id ="datesubmit" class = "btn btn-primary">Submit</button>
     </div>
-    <div id="results">
+    <div id="results" class="grid-100">
       <div id="total"></div><br>
       <div id="place1" class="grid-35 suffix-10"><span class="resultTitle"></span><br><span class="percent"></span><br><span class="totals"></span></div>
       <div class="grid-55">

@@ -9,6 +9,10 @@ footer {
   padding: .6rem;
   margin-top: 1rem;
 }
+#nav {
+  height: 2rem;
+  margin-bottom: 1rem;
+}
 #wrapper {
   padding: 2rem;
   margin-bottom: 3rem;
@@ -25,8 +29,8 @@ footer {
   font-weight: bold;
 }
 .title {
-  font-size: 4rem;
-  font-weight: bolder;
+  font-size: 5rem;
+  font-weight: 700;
 }
 .resultTitle {
   font-size: 1.7rem;
@@ -68,12 +72,6 @@ footer {
   margin-top: 2rem;
 }
 #badge {
-  width: 7rem;
-  max-width: 8rem;
-}
-#headerbutton {
   margin-top: 3rem;
-}
-#service {
-  float: right;
+  width: 11rem;
 }

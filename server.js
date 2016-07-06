@@ -25,7 +25,7 @@ app.get(['/','/police'], function(req, res) {
         currentYear : new Date().getFullYear(),
         service     : "Police",
         logo        : '<input type="image" id="badge" src="./images/SPD.jpg"/>',
-        switchLink  : '<a class="btn btn-primary red" id="service" type="submit" href="./fire">Switch to Fire Data</a>'
+        switchLink  : '<a class="btn btn-primary red" id="service" type="submit" href="./fire">View Fire Data</a>'
     });
 });
 
@@ -34,7 +34,7 @@ app.get('/fire', function(req, res) {
         currentYear : new Date().getFullYear(),
         service     : "Fire",
         logo        : '<input type="image" id="badge" src="./images/SFD.jpg"/>',
-        switchLink  : '<a class="btn btn-primary" id="service" type="submit" href="./police">Switch to Police Data</a>'
+        switchLink  : '<a class="btn btn-primary" id="service" type="submit" href="./police">View Police Data</a>'
     });
 });
 
