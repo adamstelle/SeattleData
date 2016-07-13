@@ -38,6 +38,12 @@ app.get('/fire', function(req, res) {
     });
 });
 
+app.get('/hood', function(req, res) {
+    res.render("hood", {
+        currentYear : new Date().getFullYear()
+    });
+});
+
 // Custom 404 page
 app.use(function(req, res){
   res.type("text/plain");

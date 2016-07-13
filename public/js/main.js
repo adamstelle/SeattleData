@@ -17,7 +17,7 @@ if ($("main").is("#police")) {
   currentService  = "police";
   type            = "event_clearance_subgroup";
   dateHeader      = "event_clearance_date";
-} else {
+} else if ($("main").is("#fire")) {
   baseURL         = "https://data.seattle.gov/resource/grwu-wqtk";
   currentService  = "fire";
   type            = "type";
