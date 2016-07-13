@@ -82,17 +82,22 @@ footer {
 }
 
 .question {
-  font-size: 3rem;
+  font-size: 2.5rem;
   font-style: italic;
   margin-bottom: 1.5rem;
   color: #777;
+  text-align: center;
 }
 
 #addressBar {
   text-align: center;
 }
 
-#address {
-  height: 4rem;
-  font-size: 1.5rem;
+.addressFormat {
+  height: 3rem;
+  font-size: 1.3rem;
+}
+
+#addressSubmit {
+  margin-left: 1rem;
 }
