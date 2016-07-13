@@ -12,7 +12,6 @@ var dateHeader;
 
 // Set base SODA endpoint
 if ($("main").is("#police")) {
-  console.log("police page");
   baseURL         = "https://data.seattle.gov/resource/pu5n-trf4";
   currentService  = "police";
   type            = "event_clearance_subgroup";
@@ -67,13 +66,11 @@ $("#datesubmit").on("click", function getInput() {
 
 // Build API call
 function getAPI(inputMin, inputMax, numDays) {
-  console.log("calling API for " + currentService);
   apiCall = baseURL
     + ".json?$limit=100000&$where="+dateHeader+" >= \""
     + inputMin
     + "\" AND "+dateHeader+" < \""
     + inputMax + "\"";
-  console.log(apiCall);
   // Modify URL Hash
   window.location.hash = "/dates?start="+inputMin+"%end="+inputMax+"";
   // Calculate number of days in range
@@ -144,6 +141,7 @@ function sortResults(counts, numDays) {
         return a[1] - b[1]
       }
     )
+
   var i = sortable.length;
   var totalIncidents = 0;
   // Total # of Incidents
