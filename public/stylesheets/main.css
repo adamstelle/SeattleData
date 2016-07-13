@@ -48,6 +48,11 @@ footer {
   font-size: 8rem;
   font-weight: bold;
 }
+
+.blue {
+  color: #337ab7;
+}
+
 .red {
   background-color: #B74934;
   border-color: #B74934;
@@ -74,4 +79,20 @@ footer {
 #badge {
   margin-top: 3rem;
   width: 11rem;
+}
+
+.question {
+  font-size: 3rem;
+  font-style: italic;
+  margin-bottom: 1.5rem;
+  color: #777;
+}
+
+#addressBar {
+  text-align: center;
+}
+
+#address {
+  height: 4rem;
+  font-size: 1.5rem;
 }
