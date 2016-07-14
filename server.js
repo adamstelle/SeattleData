@@ -3,12 +3,13 @@ var express = require("express");
 var app     = express();
 var path    = require('path');
 var fs      = require('fs');
-var pip     = require('leaflet-pip');
+var pip     = require("./lib/leaflet.js");
 var headless= require('leaflet-headless');
 var port    = process.env.PORT || 3000;
 var date    = new Date();
-var getJSON = require('get-json')
+var getJSON = require('get-json');
 var baseURL = "https://data.seattle.gov/resource/pu5n-trf4";
+var canvas  = require('canvas');
 
 // set up handlerbars view engine
 var handlebars = require("express-handlebars").create({

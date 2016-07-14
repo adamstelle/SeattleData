@@ -11,7 +11,9 @@
     "express-handlebars": "^3.0.0",
     "handlebars": "^4.0.5",
     "jquery": "^3.0.0",
-    "node-socrata": "^0.0.50"
+    "node-socrata": "^0.0.50",
+    "get-json": "0.0.3",
+    "canvas": "1.4.0"
   },
   "devDependencies": {
     "grunt": "^1.0.1",
