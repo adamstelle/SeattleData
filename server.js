@@ -1,15 +1,15 @@
 var jquery  = require("./public/js/jquery-3.0.0.min.js");
 var express = require("express");
 var app     = express();
-var path    = require('path');
-var fs      = require('fs');
+var path    = require("path");
+var fs      = require("fs");
 var pip     = require("./lib/leaflet.js");
-var headless= require('leaflet-headless');
+var headless= require("leaflet-headless");
 var port    = process.env.PORT || 3000;
 var date    = new Date();
-var getJSON = require('get-json');
+var getJSON = require("get-json");
 var baseURL = "https://data.seattle.gov/resource/pu5n-trf4";
-var canvas  = require('canvas');
+var schedule= require("node-schedule");
 
 // set up handlerbars view engine
 var handlebars = require("express-handlebars").create({
@@ -31,18 +31,16 @@ app.use(express.static('public'));
 var neighborhoods = JSON.parse(fs.readFileSync('./jsonData/neighborhoods.geojson', 'utf8'));
 var gjLayer = L.geoJson(neighborhoods);
 var numHoods= neighborhoods["features"].length;
-// Get incident JSON data
 
 // Build API Call
 function getIncidentData() {
   var today = date.toJSON().slice(0,10);
-  var lastMonth = new Date(date.setDate(date.getDate()-10)).toJSON().slice(0,10);
+  var lastMonth = new Date(date.setDate(date.getDate()-1)).toJSON().slice(0,10);
   var apiCall = baseURL
     + ".json?$limit=100000&$where=event_clearance_date >= \""
     + lastMonth
     + "\" AND event_clearance_date < \""
     + today + "\"";
-  // Calculate number of days in range
   getJSON(apiCall, function(error, response) {
     var myjson = response;
     mapIncidents(myjson);
@@ -75,7 +73,7 @@ function mapIncidents(myjson) {
     var thisHood = {};
     thisHood["name"]         = n["properties"]["name"];
     thisHood["incidents"]    = resultsByHood.filter(function(o) {
-      return o.neighborhood == n["properties"]["name"];
+      return (o.localhood || o.neighborhood) == n["properties"]["name"]
     });
     thisHood["numIncidents"] = thisHood["incidents"].length;
     thisHood["percentage"]   = (thisHood["numIncidents"] / resultsByHood.length)*100;
@@ -83,7 +81,15 @@ function mapIncidents(myjson) {
     thisHood["percentVariance"] = (thisHood["percentage"] - resultsByHood.length *100 / numHoods / resultsByHood.length );
     myNeighborhood.push(thisHood);
   });
-  console.log(myNeighborhood);
+  // console.log(myNeighborhood);
+  // Check that all incidents have been mapped to neighborhood
+  j = 0;
+  for (i=0;i<myNeighborhood.length;i++) {
+    j += myNeighborhood[i]["incidents"].length
+  }
+  console.log(" "+resultsByHood.length - j+" incidents were unsuccessfully mapped to a neighborhood.");
+  var jsonResults = JSON.stringify(myNeighborhood);
+  return jsonResults;
 }
 
 // Calc total incidents by type
@@ -107,6 +113,9 @@ function getIncidentsByType(object) {
   return IncidentsByType;
 }
 
+var results = getIncidentData();
+console.log(results);
+
 // BASIC ROUTES
 app.get(['/','/police'], function(req, res) {
     res.render("police", {
@@ -129,6 +138,7 @@ app.get('/fire', function(req, res) {
 app.get('/hood', function(req, res) {
     res.render("hood", {
         currentYear : new Date().getFullYear(),
+        results     : results
     });
 });
 
@@ -146,9 +156,4 @@ app.use(function(err, req, res, next){
   res.send("500 - Server Error");
 });
 
-
-
-// Get last X months of city-wide incident data
-
-getIncidentData();
 app.listen(port);
