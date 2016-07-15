@@ -24,5 +24,7 @@ Pseudo code
 
 In meantime, on server side code:
 - run daily query of SOPA database, mapping against neighborhoods
-- run daily query of neighborhoods
--
+- calculate # of incidents by type and neighborhoods
+  -
+- calculate city wide avg. (per neighborhood) by incident type
+  -  total # of incidents (by type) / total # neighborhoods 
