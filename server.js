@@ -23,21 +23,20 @@ var handlebars = require("express-handlebars").create({
 
 app.engine("handlebars", handlebars.engine);
 app.set("view engine", "handlebars");
-
 app.use(express.static('public'));
 
 // RECURRING SERVER SIDE SCRIPTS
 
-// Load neighborhoods
+// Load neighborhoods & Calc total
 var neighborhoods = JSON.parse(fs.readFileSync('./jsonData/neighborhoods.geojson', 'utf8'));
 var gjLayer = L.geoJson(neighborhoods);
-
+var numHoods= neighborhoods["features"].length;
 // Get incident JSON data
 
 // Build API Call
 function getIncidentData() {
   var today = date.toJSON().slice(0,10);
-  var lastMonth = new Date(date.setDate(date.getDate()-1)).toJSON().slice(0,10);
+  var lastMonth = new Date(date.setDate(date.getDate()-10)).toJSON().slice(0,10);
   var apiCall = baseURL
     + ".json?$limit=100000&$where=event_clearance_date >= \""
     + lastMonth
@@ -52,8 +51,6 @@ function getIncidentData() {
 
 function mapIncidents(myjson) {
   var resultsByHood = [];
-  var counts        = {};
-  var sortedByType  = [];
   for (i=0; i<myjson.length; i++) {
     try {
       var result = {};
@@ -70,29 +67,45 @@ function mapIncidents(myjson) {
       console.log(" "+i+" incident has undefined latlng!, "+(e)+" ");
     }
   }
-  var myNeighborhood = resultsByHood.filter(function(el) {
-    return el.neighborhood = "Capitol Hill"
+
+  // Get city-wide incidents by type & avg # incidents per neighborhood
+  var totalIncidentsByType = (getIncidentsByType(resultsByHood));
+  var myNeighborhood = [];
+  neighborhoods["features"].forEach(function(n) {
+    var thisHood = {};
+    thisHood["name"]         = n["properties"]["name"];
+    thisHood["incidents"]    = resultsByHood.filter(function(o) {
+      return o.neighborhood == n["properties"]["name"];
+    });
+    thisHood["numIncidents"] = thisHood["incidents"].length;
+    thisHood["percentage"]   = (thisHood["numIncidents"] / resultsByHood.length)*100;
+    thisHood["numVariance"]  = (thisHood["numIncidents"] - resultsByHood.length / numHoods);
+    thisHood["percentVariance"] = (thisHood["percentage"] - resultsByHood.length *100 / numHoods / resultsByHood.length );
+    myNeighborhood.push(thisHood);
   });
-  myNeighborhood.forEach(function (o) {
+  console.log(myNeighborhood);
+}
+
+// Calc total incidents by type
+function getIncidentsByType(object) {
+  var counts = {};
+  var IncidentsByType  = [];
+  object.forEach(function (o) {
     if (!counts.hasOwnProperty(o.type)) {
       counts[o.type] = 0;
     }
     counts[o.type] += 1;
   });
   for (var item in counts) {
-    sortedByType.push([item, counts[item]])
-    sortedByType.sort(
+    IncidentsByType.push([item, counts[item], (counts[item]/numHoods)])
+    IncidentsByType.sort(
       function(a, b) {
         return a[1] - b[1]
       }
     )
   }
-  console.log(myNeighborhood);
-  console.log(sortedByType);
+  return IncidentsByType;
 }
-
-getIncidentData();
-
 
 // BASIC ROUTES
 app.get(['/','/police'], function(req, res) {
@@ -137,5 +150,5 @@ app.use(function(err, req, res, next){
 
 // Get last X months of city-wide incident data
 
-
+getIncidentData();
 app.listen(port);
