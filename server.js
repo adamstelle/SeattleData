@@ -33,7 +33,7 @@ var gjLayer = L.geoJson(neighborhoods);
 var numHoods= neighborhoods["features"].length;
 
 // Build API Call
-function getIncidentData() {
+function getIncidentData(cb) {
   var today = date.toJSON().slice(0,10);
   var lastMonth = new Date(date.setDate(date.getDate()-1)).toJSON().slice(0,10);
   var apiCall = baseURL
@@ -43,7 +43,7 @@ function getIncidentData() {
     + today + "\"";
   getJSON(apiCall, function(error, response) {
     var myjson = response;
-    mapIncidents(myjson);
+    cb(mapIncidents(myjson));
   });
 }
 
@@ -65,7 +65,6 @@ function mapIncidents(myjson) {
       console.log(" "+i+" incident has undefined latlng!, "+(e)+" ");
     }
   }
-
   // Get city-wide incidents by type & avg # incidents per neighborhood
   var totalIncidentsByType = (getIncidentsByType(resultsByHood));
   var myNeighborhood = [];
@@ -113,8 +112,16 @@ function getIncidentsByType(object) {
   return IncidentsByType;
 }
 
-var results = getIncidentData();
-console.log(results);
+var results = getIncidentData(saveData);
+
+function saveData(json) {
+  fs.writeFile("./public/data.json", json, function(err) {
+    if(err) {
+      return console.log(err);
+    }
+    console.log("The file was saved!");
+  });
+}
 
 // BASIC ROUTES
 app.get(['/','/police'], function(req, res) {

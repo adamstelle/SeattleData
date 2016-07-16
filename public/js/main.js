@@ -190,11 +190,38 @@ function addMarkers(myjson) {
 
 // Address validation / verification
 
+// Get daily updated json from server
+function getdata(){
+  $.ajax({
+      url: './data.json',
+      dataType: 'json',
+      async: false,
+      cache: false
+  }).done(function(data){
+      //"data" will be JSON. Do what you want with it.
+      jsondata = data;
+      return jsondata;
+  });
+  return jsondata;
+}
+
+var serverjson = getdata();
+console.log(serverjson);
+
 // Retrieve and clean submitted address
 $("#addressSubmit").on("click", function getAddress() {
   var userAddress = $("#address").val();
-  getResults(userAddress);
+  getHood(userAddress);
+  console.log(userAddress);
 });
+
+function getHood(userAddress) {
+  serverjson.forEach(function (o) {
+    if (o["name"] == userAddress) {
+      console.log(o["numIncidents"]);
+    }
+  });
+}
 
 // // Convert to latlng
 // function getResults(userAddress) {
