@@ -9,6 +9,8 @@ var baseURL;
 var currentService;
 var type;
 var dateHeader;
+var pip = require("./leaflet.js");
+var geojson = require("geojson-utils");
 
 // Set base SODA endpoint
 if ($("main").is("#police")) {
@@ -191,55 +193,46 @@ function addMarkers(myjson) {
 // Address validation / verification
 
 // Get daily updated json from server
-function getdata(){
-  $.ajax({
-      url: './data.json',
-      dataType: 'json',
-      async: false,
-      cache: false
-  }).done(function(data){
-      //"data" will be JSON. Do what you want with it.
-      jsondata = data;
-      return jsondata;
-  });
-  return jsondata;
-}
-
-var serverjson = getdata();
-console.log(serverjson);
-
-// Retrieve and clean submitted address
-$("#addressSubmit").on("click", function getAddress() {
-  codeAddress();
-});
-
-// function getHood(userAddress) {
-//   serverjson.forEach(function (o) {
-//     if (o["name"] == userAddress) {
-//       console.log(o["numIncidents"]);
-//     }
+// function getdata(callback){
+//   $.ajax({
+//       url: './data.json',
+//       dataType: 'json',
+//       cache: false
+//   }).done(function(data){
+//       //"data" will be JSON. Do what you want with it.
+//       var jsondata = data;
+//       callback(jsondata);
 //   });
 // }
 
-geocoder = new google.maps.Geocoder();
+// var serverjson = getdata(print);
+//
+// function print(i) {
+//   alert(i);
+// }
 
-function codeAddress() {
-    var address = $("#address").val();
-    geocoder.geocode( { 'address' : address }, function( results, status ) {
-        if( status == google.maps.GeocoderStatus.OK ) {
-            map.setCenter( results[0].geometry.location );
-            var marker = new google.maps.Marker( {
-                map     : map,
-                position: results[0].geometry.location
-            } );
-            return location.LatLng;
-        } else {
-            alert( 'Geocode was not successful for the following reason: ' + status );
-        }
-    } );
-}
+// Retrieve and clean submitted address
+// $("#addressSubmit").on("click", function getAddress() {
+//   console.log(codeAddress());
+// });
 
 // // Convert to latlng
+// geocoder = new google.maps.Geocoder();
+// function codeAddress() {
+//   var address = $("#address").val();
+//   geocoder.geocode( { 'address' : address }, function( results, status ) {
+//     if( status == google.maps.GeocoderStatus.OK ) {
+//       var userCoordinates =  ""+results[0].geometry.location.lng()+", "+results[0].geometry.location.lat()+"";
+//       console.log(userCoordinates);
+//     } else {
+//       alert( 'Geocode was not successful for the following reason: ' + status );
+//     }
+//     console.log(userCoordinates);
+//     pip.pointInLayer([userCoordinates], gjLayer, [true])[0]["feature"]["properties"]["nhood"];
+//     return userCoordinates;
+//   });
+// }
+
 // function getResults(userAddress) {
 //   var coordinates      = getCoordinates(userAddress);
 //   var userNeigh        = getNeighborhoods(coordinates);

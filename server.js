@@ -1,15 +1,18 @@
 var jquery  = require("./public/js/jquery-3.0.0.min.js");
 var express = require("express");
+var bodyParser =require("body-parser");
 var app     = express();
 var path    = require("path");
 var fs      = require("fs");
-var pip     = require("./lib/leaflet.js");
+// Store pip locally (broken module) in public to make available to client JS
+var pip     = require("./public/js/leaflet.js");
 var headless= require("leaflet-headless");
 var port    = process.env.PORT || 3000;
 var date    = new Date();
 var getJSON = require("get-json");
 var baseURL = "https://data.seattle.gov/resource/pu5n-trf4";
 var schedule= require("node-schedule");
+var NodeGeocoder = require('node-geocoder');
 
 // set up handlerbars view engine
 var handlebars = require("express-handlebars").create({
@@ -33,7 +36,7 @@ var gjLayer = L.geoJson(neighborhoods);
 var numHoods= neighborhoods["features"].length;
 
 // Build API Call
-function getIncidentData(cb) {
+function getIncidentData(callback) {
   var today = date.toJSON().slice(0,10);
   var lastMonth = new Date(date.setDate(date.getDate()-1)).toJSON().slice(0,10);
   var apiCall = baseURL
@@ -43,7 +46,7 @@ function getIncidentData(cb) {
     + today + "\"";
   getJSON(apiCall, function(error, response) {
     var myjson = response;
-    cb(mapIncidents(myjson));
+    callback(mapIncidents(myjson));
   });
 }
 
@@ -114,6 +117,7 @@ function getIncidentsByType(object) {
 
 var results = getIncidentData(saveData);
 
+// What to do with the retrieved & parsed json (callback)
 function saveData(json) {
   fs.writeFile("./public/data.json", json, function(err) {
     if(err) {
@@ -122,6 +126,14 @@ function saveData(json) {
     console.log("The file was saved!");
   });
 }
+
+var options = {
+  provider: 'google'
+};
+
+var geocoder = NodeGeocoder(options);
+
+
 
 // BASIC ROUTES
 app.get(['/','/police'], function(req, res) {
@@ -149,6 +161,22 @@ app.get('/hood', function(req, res) {
     });
 });
 
+app.use(bodyParser.urlencoded({
+    extended: true
+}));
+
+app.use(bodyParser.json());
+
+app.post("/", function (req, res) {
+    var userHood = getLatLng(req.body.user.address, latlngcallback);
+    function getLatLng(address) {
+      geocoder.geocode(address, function(err, res) {
+        console.log(""+res[0]["longitude"]+", "+res[0]["latitude"]+" in main function");
+        var userHood = pip.pointInLayer([res[0]["longitude"],res[0]["latitude"]], gjLayer, [true])[0]["feature"]["properties"]["nhood"];
+        res.send(userHood);
+      });
+    }
+});
 
 app.use(function(req, res){
   res.type("text/plain");
