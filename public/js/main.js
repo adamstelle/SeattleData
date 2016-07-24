@@ -210,17 +210,33 @@ console.log(serverjson);
 
 // Retrieve and clean submitted address
 $("#addressSubmit").on("click", function getAddress() {
-  var userAddress = $("#address").val();
-  getHood(userAddress);
-  console.log(userAddress);
+  codeAddress();
 });
 
-function getHood(userAddress) {
-  serverjson.forEach(function (o) {
-    if (o["name"] == userAddress) {
-      console.log(o["numIncidents"]);
-    }
-  });
+// function getHood(userAddress) {
+//   serverjson.forEach(function (o) {
+//     if (o["name"] == userAddress) {
+//       console.log(o["numIncidents"]);
+//     }
+//   });
+// }
+
+geocoder = new google.maps.Geocoder();
+
+function codeAddress() {
+    var address = $("#address").val();
+    geocoder.geocode( { 'address' : address }, function( results, status ) {
+        if( status == google.maps.GeocoderStatus.OK ) {
+            map.setCenter( results[0].geometry.location );
+            var marker = new google.maps.Marker( {
+                map     : map,
+                position: results[0].geometry.location
+            } );
+            return location.LatLng;
+        } else {
+            alert( 'Geocode was not successful for the following reason: ' + status );
+        }
+    } );
 }
 
 // // Convert to latlng
