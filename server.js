@@ -14,6 +14,13 @@ var baseURL = "https://data.seattle.gov/resource/pu5n-trf4";
 var schedule= require("node-schedule");
 var NodeGeocoder = require('node-geocoder');
 
+app.use(bodyParser.urlencoded({
+    extended: true
+}));
+
+app.use(bodyParser.json());
+
+
 // set up handlerbars view engine
 var handlebars = require("express-handlebars").create({
   defaultLayout: "main",
@@ -119,7 +126,7 @@ var results = getIncidentData(saveData);
 
 // What to do with the retrieved & parsed json (callback)
 function saveData(json) {
-  fs.writeFile("./public/data.json", json, function(err) {
+  fs.writeFile("./jsonData/currentData.json", json, function(err) {
     if(err) {
       return console.log(err);
     }
@@ -127,13 +134,24 @@ function saveData(json) {
   });
 }
 
+// Retrieve neighborhood data from JSON file based on user address
+function retrieveHoodData(neighborhood) {
+  var currentHoodData = JSON.parse(fs.readFileSync('./jsonData/currentData.json', 'utf8'));
+  var result;
+  currentHoodData.forEach(function (o) {
+    if (o.name == neighborhood) {
+      result = o;
+    }
+  });
+  return result;
+}
+
+
 var options = {
   provider: 'google'
 };
 
 var geocoder = NodeGeocoder(options);
-
-
 
 // BASIC ROUTES
 app.get(['/','/police'], function(req, res) {
@@ -161,21 +179,16 @@ app.get('/hood', function(req, res) {
     });
 });
 
-app.use(bodyParser.urlencoded({
-    extended: true
-}));
-
-app.use(bodyParser.json());
-
-app.post("/", function (req, res) {
-    var userHood = getLatLng(req.body.user.address, latlngcallback);
-    function getLatLng(address) {
-      geocoder.geocode(address, function(err, res) {
-        console.log(""+res[0]["longitude"]+", "+res[0]["latitude"]+" in main function");
-        var userHood = pip.pointInLayer([res[0]["longitude"],res[0]["latitude"]], gjLayer, [true])[0]["feature"]["properties"]["nhood"];
-        res.send(userHood);
-      });
-    }
+app.post("/address", function(req, res) {
+    geocoder.geocode(req.body.address, function(err, result) {
+      console.log(""+result[0]["longitude"]+", "+result[0]["latitude"]+" in main function");
+      var userHood = pip.pointInLayer([result[0]["longitude"],result[0]["latitude"]], gjLayer, [true])[0]["feature"]["properties"]["nested"];
+      var hoodData = retrieveHoodData(userHood);
+      console.log(hoodData);
+      res.render("hood", {
+        data : hoodData
+      })
+    });
 });
 
 app.use(function(req, res){

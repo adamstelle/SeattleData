@@ -13,6 +13,7 @@
     "get-json": "0.0.3",
     "handlebars": "^4.0.5",
     "jquery": "^3.0.0",
+    "node-geocoder": "^3.13.1",
     "node-socrata": "^0.0.50"
   },
   "devDependencies": {
