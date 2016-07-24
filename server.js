@@ -183,7 +183,7 @@ app.post("/address", function(req, res) {
     geocoder.geocode(req.body.address, function(err, result) {
       console.log(""+result[0]["longitude"]+", "+result[0]["latitude"]+" in main function");
       var userHood = pip.pointInLayer([result[0]["longitude"],result[0]["latitude"]], gjLayer, [true])[0]["feature"]["properties"]["nested"];
-      var hoodData = retrieveHoodData(userHood);
+      var hoodData = JSON.stringify(retrieveHoodData(userHood));
       console.log(hoodData);
       res.render("hood", {
         data : hoodData

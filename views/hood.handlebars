@@ -6,6 +6,8 @@
   </form>
   {{test}}
   <div id="map"></div>
-  {{{results}}}
+  {{#if data}}
+    <p>{{{data}}}</p>
+  {{/if}}
   {{> map}}
 </main>
