@@ -80,8 +80,9 @@ function mapIncidents(myjson) {
   var myNeighborhood = [];
   neighborhoods["features"].forEach(function(n) {
     var thisHood = {};
-    thisHood["name"]         = n["properties"]["name"];
-    thisHood["incidents"]    = resultsByHood.filter(function(o) {
+    thisHood["subhood"]         = n["properties"]["name"];
+    thisHood["hood"]          = n["properties"]["nhood"];
+    thisHood["incidents"]     = resultsByHood.filter(function(o) {
       return (o.localhood || o.neighborhood) == n["properties"]["name"]
     });
     thisHood["numIncidents"] = thisHood["incidents"].length;
@@ -135,17 +136,20 @@ function saveData(json) {
 }
 
 // Retrieve neighborhood data from JSON file based on user address
-function retrieveHoodData(neighborhood) {
+function retrieveHoodData(userHood, userSubHood) {
   var currentHoodData = JSON.parse(fs.readFileSync('./jsonData/currentData.json', 'utf8'));
-  var result;
+  var result = {};
+  result.hood = [];
   currentHoodData.forEach(function (o) {
-    if (o.name == neighborhood) {
-      result = o;
+    if (o.subhood == userSubHood) {
+      result["subhood"] = o;
+    }
+    if (o.hood == userHood) {
+      result.hood.push(o);
     }
   });
   return result;
 }
-
 
 var options = {
   provider: 'google'
@@ -181,9 +185,9 @@ app.get('/hood', function(req, res) {
 
 app.post("/address", function(req, res) {
     geocoder.geocode(req.body.address, function(err, result) {
-      console.log(""+result[0]["longitude"]+", "+result[0]["latitude"]+" in main function");
-      var userHood = pip.pointInLayer([result[0]["longitude"],result[0]["latitude"]], gjLayer, [true])[0]["feature"]["properties"]["nested"];
-      var hoodData = JSON.stringify(retrieveHoodData(userHood));
+      var userHood    = pip.pointInLayer([result[0]["longitude"],result[0]["latitude"]], gjLayer, [true])[0]["feature"]["properties"]["nhood"];
+      var userSubHood = pip.pointInLayer([result[0]["longitude"],result[0]["latitude"]], gjLayer, [true])[0]["feature"]["properties"]["nested"];
+      var hoodData    = retrieveHoodData(userHood, userSubHood);
       console.log(hoodData);
       res.render("hood", {
         data : hoodData
