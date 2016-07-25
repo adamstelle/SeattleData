@@ -1,8 +1,13 @@
 <main id="hood">
   <h1 class="question">Whats going on in <span class="blue">your</span> neighborhood?</h1>
-  <input form="address" placeholder="Enter your address to find out." class="addressFormat prefix-20 grid-60 form-control" id="address"></input>
-  <button type="button" id="addressSubmit" class="btn btn-primary addressFormat">Submit</button>
-
-  {{{results}}}
+  <form method="POST" action="/address?form=useraddress">
+    <input type="text" name="address" placeholder="Enter your address to find out." class="addressFormat prefix-20 grid-60 form-control" id="address">
+    <input type="submit" value="Submit" id="addressSubmit" class="btn btn-primary addressFormat">
+  </form>
+  {{test}}
+  <div id="map"></div>
+  {{#if data}}
+    <p>{{{data}}}</p>
+  {{/if}}
   {{> map}}
 </main>
