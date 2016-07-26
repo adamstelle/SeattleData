@@ -115,7 +115,7 @@ function mapIncidents(myjson) {
     thisHood["diffFromAvg"]  = Math.round((thisHood["numIncidents"] / (resultsByHood.length / numHoods))*10)/10;
     myNeighborhood.push(thisHood);
   });
-  
+
   // Convert to JSON
   var jsonResults = JSON.stringify(myNeighborhood);
   return jsonResults;
@@ -154,7 +154,7 @@ function saveData(json) {
 }
 
 // Initiate data gathering & storage - THIS SHOULD BE RECURRING DAILY
-// getIncidentData(saveData);
+getIncidentData(saveData);
 
 // Retrieve neighborhood data from JSON file based on user address
 function retrieveHoodData(userHood, userSubHood) {
