@@ -75,29 +75,38 @@ function mapIncidents(myjson) {
       console.log(" "+i+" incident has undefined latlng!, "+(e)+" ");
     }
   }
-  // Get city-wide incidents by type & avg # incidents per neighborhood
-  var totalIncidentsByType = (getIncidentsByType(resultsByHood));
   var myNeighborhood = [];
+
+  // Get city-wide incidents by type & avg # incidents per neighborhood & add to array
+  var totalIncidentsByType = (getIncidentsByType(resultsByHood));
+  myNeighborhood.push(totalIncidentsByType);
+
   neighborhoods["features"].forEach(function(n) {
     var thisHood = {};
-    thisHood["subhood"]         = n["properties"]["name"];
+    thisHood["subhood"]       = n["properties"]["name"];
     thisHood["hood"]          = n["properties"]["nhood"];
     thisHood["incidents"]     = resultsByHood.filter(function(o) {
       return (o.localhood || o.neighborhood) == n["properties"]["name"]
     });
+    thisHood["sortedIncidents"]= getIncidentsByType(thisHood["incidents"]);
+    // Calculate variance in incident types btw neighborhood & city-wide
+    thisHoodthisHood["sortedIncidents"].forEach(function filter(function(p) {
+      
+
+      }
+    }
+
     thisHood["numIncidents"] = thisHood["incidents"].length;
     thisHood["percentage"]   = (thisHood["numIncidents"] / resultsByHood.length)*100;
     thisHood["numVariance"]  = (thisHood["numIncidents"] - resultsByHood.length / numHoods);
     thisHood["percentVariance"] = (thisHood["percentage"] - resultsByHood.length *100 / numHoods / resultsByHood.length );
     myNeighborhood.push(thisHood);
   });
-  // console.log(myNeighborhood);
-  // Check that all incidents have been mapped to neighborhood
-  j = 0;
-  for (i=0;i<myNeighborhood.length;i++) {
-    j += myNeighborhood[i]["incidents"].length
-  }
-  console.log(" "+resultsByHood.length - j+" incidents were unsuccessfully mapped to a neighborhood.");
+
+
+
+
+  // Convert to JSON
   var jsonResults = JSON.stringify(myNeighborhood);
   return jsonResults;
 }
@@ -113,19 +122,18 @@ function getIncidentsByType(object) {
     counts[o.type] += 1;
   });
   for (var item in counts) {
-    IncidentsByType.push([item, counts[item], (counts[item]/numHoods)])
+    IncidentsByType.push({"name" : item, "number" : counts[item], "avgPerHood" : (counts[item]/numHoods)})
     IncidentsByType.sort(
       function(a, b) {
-        return a[1] - b[1]
+        return a["number"] - b["number"]
       }
     )
   }
+  IncidentsByType.reverse();
   return IncidentsByType;
 }
 
-var results = getIncidentData(saveData);
-
-// What to do with the retrieved & parsed json (callback)
+// Save the results to JSON file on server
 function saveData(json) {
   fs.writeFile("./jsonData/currentData.json", json, function(err) {
     if(err) {
@@ -134,6 +142,9 @@ function saveData(json) {
     console.log("The file was saved!");
   });
 }
+
+// Initiate data gathering & storage - THIS SHOULD BE RECURRING DAILY
+getIncidentData(saveData);
 
 // Retrieve neighborhood data from JSON file based on user address
 function retrieveHoodData(userHood, userSubHood) {
@@ -179,7 +190,6 @@ app.get('/fire', function(req, res) {
 app.get('/hood', function(req, res) {
     res.render("hood", {
         currentYear : new Date().getFullYear(),
-        results     : results
     });
 });
 

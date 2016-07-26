@@ -12,13 +12,13 @@
   </div>
   <div class="grid-70">
     <h1 class="title">Neighborhood Crime Report</h1>
-    <h2>Last month's crime results for {{{data.subhood.subhood}}}, {{{data.subhood.hood}}}</h2>
+    <h2>Last month's crime results for <span class="boldblue percent">  {{{data.subhood.subhood}}}, {{{data.subhood.hood}}} </span> </h2>
   </div>
   <div class="grid-30 mobile-grid-100">
     {{{logo}}}
   </div>
   <div class="selectDates grid-100">
-    <h3>In the last 30 days there have been span {{{data.subhood.numIncidents}}} incidents in your neighborhood.</h3>
+    <h3>In the last 30 days there have been <span class="boldblue percent"> {{{data.subhood.numIncidents}}} </span> incidents in your neighborhood.</h3>
   </div>
   <div id="results" class="grid-100">
   <div id="total"></div><br>
@@ -30,10 +30,12 @@
     <div id="place5" class="resultBlock grid-50"><span class="resultTitle"></span><br><span class="percent"></span><br><span class="totals"></span></div>
   </div>
   </div>
-    <p>{{{data.hood.numIncidents}}}</p>
-    <p>{{{data.hood.numVariance}}}</p>
-    <p>{{{data.hood.percentVariance}}}</p>
-    <p>{{{data.subhood.name}}}</p>
+    <p>{{{data.subhood.sortedIncidents.[0].name}}}</p>
+    <p>{{{data.subhood.sortedIncidents.[0].number}}}</p>
+    <p>{{{data.subhood.sortedIncidents.[1].name}}}</p>
+    <p>{{{data.subhood.sortedIncidents.[1].number}}}</p>
+    <p>{{{data.subhood.sortedIncidents.[2].name}}}</p>
+    <p>{{{data.subhood.sortedIncidents.[2].number}}}</p>
     <p>{{{data.subhood.numIncidents}}}</p>
     <p>{{{data.subhood.numVariance}}}</p>
     <p>{{{data.subhood.percentVariance}}}</p>
