@@ -20,12 +20,11 @@ footer {
 #results {
   width: 100%;
   border-top: 1px solid #eee;
-  margin-top: 2rem;
-  padding-top: 1rem;
+  margin-top: 1rem;
   line-height: 1;
 }
 .percentSign {
-  font-size: 4rem;
+  font-size: 3rem;
   font-weight: bold;
 }
 .title {
@@ -34,7 +33,7 @@ footer {
 }
 .resultTitle {
   font-size: 1.7rem;
-  font-weight: 400;
+  font-weight: 700;
   margin-bottom: 1rem;
 }
 .resultBlock {
@@ -45,28 +44,23 @@ footer {
 }
 .percent {
   color: #337ab7;
-  font-size: 8rem;
+  font-size: 6rem;
   font-weight: bold;
 }
-
-.blue {
-  color: #337ab7;
-}
-
 .red {
   background-color: #B74934;
   border-color: #B74934;
 }
-#place1 {
+.place1 {
   padding-left: 0;
 }
-#place1 .percent {
+.place1 .percent {
   font-size: 14rem;
 }
-#place1 .percentSign {
+.place1 .percentSign {
   font-size: 7rem;
 }
-#place1 .resultTitle {
+.place1 .resultTitle {
   font-size: 3rem;
 }
 .boldblue {
@@ -80,7 +74,6 @@ footer {
   margin-top: 3rem;
   width: 11rem;
 }
-
 .question {
   font-size: 2.5rem;
   font-style: italic;
@@ -88,16 +81,35 @@ footer {
   color: #777;
   text-align: center;
 }
-
+.orange {
+  color: #FF753A;
+}
+.yellow {
+  color: #FFCF3A;
+}
+.purple {
+  color: #3F3DB3;
+}
+.blue {
+  color: #337ab7;
+}
+.green {
+  color: #27AE78;
+}
 #addressBar {
   text-align: center;
 }
-
 .addressFormat {
   height: 3rem;
   font-size: 1.3rem;
 }
-
+.resultsSection {
+  margin-bottom: 2rem;
+}
+.resultNumber {
+  font-size: 2.3rem;
+  font-weight: bold;
+}
 #addressSubmit {
   margin-left: 1rem;
 }

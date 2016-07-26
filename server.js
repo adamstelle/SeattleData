@@ -14,6 +14,10 @@ var baseURL = "https://data.seattle.gov/resource/pu5n-trf4";
 var schedule= require("node-schedule");
 var NodeGeocoder = require('node-geocoder');
 
+// Set # of days of data to collect from server
+var numDays = 30;
+
+
 app.use(bodyParser.urlencoded({
     extended: true
 }));
@@ -45,7 +49,7 @@ var numHoods= neighborhoods["features"].length;
 // Build API Call
 function getIncidentData(callback) {
   var today = date.toJSON().slice(0,10);
-  var lastMonth = new Date(date.setDate(date.getDate()-1)).toJSON().slice(0,10);
+  var lastMonth = new Date(date.setDate(date.getDate()-numDays)).toJSON().slice(0,10);
   var apiCall = baseURL
     + ".json?$limit=100000&$where=event_clearance_date >= \""
     + lastMonth
@@ -89,23 +93,29 @@ function mapIncidents(myjson) {
       return (o.localhood || o.neighborhood) == n["properties"]["name"]
     });
     thisHood["sortedIncidents"]= getIncidentsByType(thisHood["incidents"]);
-    // Calculate variance in incident types btw neighborhood & city-wide
-    thisHoodthisHood["sortedIncidents"].forEach(function filter(function(p) {
-      
-
-      }
-    }
-
     thisHood["numIncidents"] = thisHood["incidents"].length;
-    thisHood["percentage"]   = (thisHood["numIncidents"] / resultsByHood.length)*100;
-    thisHood["numVariance"]  = (thisHood["numIncidents"] - resultsByHood.length / numHoods);
-    thisHood["percentVariance"] = (thisHood["percentage"] - resultsByHood.length *100 / numHoods / resultsByHood.length );
+
+    // Calculate variance in incident types btw neighborhood & city-wide
+    thisHood["highestVariance"] = [];
+    thisHood["sortedIncidents"].forEach(function(p) {
+      for(q=0;q < myNeighborhood[0].length; q++) {
+        if(p["name"] == myNeighborhood[0][q]["name"]) {
+          p["variance"] = Math.round((p["number"]/ (myNeighborhood[0][q]["number"]))*100)/10;
+          p["diffFromAvg"] = Math.round((p["number"] /
+          (myNeighborhood[0][q]["number"] / numHoods))*10)/10;
+          p["numPerHood"] = Math.round((myNeighborhood[0][q]["number"] / numHoods)*10)/10;
+        }
+      }
+      thisHood["highestVariance"].push(p);
+    });
+    thisHood["highestVariance"].sort(function(a,b) {
+      return b["variance"] - a["variance"];
+    });
+    thisHood["percentage"]   = Math.round((thisHood["numIncidents"] / resultsByHood.length)*1000)/10;
+    thisHood["diffFromAvg"]  = Math.round((thisHood["numIncidents"] / (resultsByHood.length / numHoods))*10)/10;
     myNeighborhood.push(thisHood);
   });
-
-
-
-
+  
   // Convert to JSON
   var jsonResults = JSON.stringify(myNeighborhood);
   return jsonResults;
@@ -144,7 +154,7 @@ function saveData(json) {
 }
 
 // Initiate data gathering & storage - THIS SHOULD BE RECURRING DAILY
-getIncidentData(saveData);
+// getIncidentData(saveData);
 
 // Retrieve neighborhood data from JSON file based on user address
 function retrieveHoodData(userHood, userSubHood) {

@@ -10,35 +10,56 @@
   <div id="nav" class="grid-100">
     <a class="btn btn-primary" id="service" type="submit" href="./hood">Check a different Address</a>
   </div>
-  <div class="grid-70">
+  <div class="grid-100">
     <h1 class="title">Neighborhood Crime Report</h1>
-    <h2>Last month's crime results for <span class="boldblue percent">  {{{data.subhood.subhood}}}, {{{data.subhood.hood}}} </span> </h2>
+    <h3>Last month's crime results for <span class="boldblue percent">  {{{data.subhood.subhood}}}, {{{data.subhood.hood}}} </span> </h3>
   </div>
-  <div class="grid-30 mobile-grid-100">
-    {{{logo}}}
+  <div id="results" class="grid-100 ">
+    <div class="resultsSection grid-70 grid-parent">
+      <h4>In the last 30 days there have been <span class="boldblue percent"> {{{data.subhood.numIncidents}}} </span> incidents in {{{data.subhood.subhood}}}. That's <span class="boldblue percent"> {{{data.subhood.percentage}}}% </span> of the total incidents in the Greater Seattle Area, and <span class="boldblue percent"> {{{data.subhood.diffFromAvg}}}x </span> the average Seattle neighborhood.</h4>
+    </div>
+    <div class="resultsSection grid-100 grid-parent">
+      <h4><strong>Most common</strong> types of incidents in your neighborhood:</h4>
+      <div class="resultsSection">
+        <div class="grid-20 grid-parent"><span class="resultNumber blue"> {{{data.subhood.sortedIncidents.[0].number}}} </span><br><span class="resultTitle"> {{{data.subhood.sortedIncidents.[0].name}}} </span></div>
+        <div class="grid-20 grid-parent"><span class="resultNumber blue"> {{{data.subhood.sortedIncidents.[1].number}}} </span><br><span class="resultTitle"> {{{data.subhood.sortedIncidents.[1].name}}} </span></div>
+        <div class="grid-20 grid-parent"><span class="resultNumber blue"> {{{data.subhood.sortedIncidents.[2].number}}} </span><br><span class="resultTitle"> {{{data.subhood.sortedIncidents.[2].name}}} </span></div>
+        <div class="grid-20 grid-parent"><span class="resultNumber blue"> {{{data.subhood.sortedIncidents.[3].number}}} </span><br><span class="resultTitle"> {{{data.subhood.sortedIncidents.[3].name}}} </span></div>
+        <div class="grid-20 grid-parent"><span class="resultNumber blue"> {{{data.subhood.sortedIncidents.[4].number}}} </span><br><span class="resultTitle"> {{{data.subhood.sortedIncidents.[4].name}}} </span></div>
+      </div>
+    </div>
+    <div class="grid-100 grid-parent resultsSection">
+      <h4>Incident types that are <strong>unusually</strong> common (compared to other neighborhoods):</h4>
+      <div class="grid-25 grid-parent"><span class="resultNumber blue"> {{{data.subhood.highestVariance.[0].name}}}</span><br></div>
+      <div class="grid-25"><span class="resultNumber orange"> {{{data.subhood.highestVariance.[0].diffFromAvg}}}x </span><br> more likely to occur here than the average neighborhood in this period</div>
+      <div class="grid-25"><span class="resultNumber orange"> {{{data.subhood.highestVariance.[0].variance}}}%</span><br> of all citywide incidents happened in this neighborhood</div>
+      <div class="grid-25"><span class="resultNumber orange"> {{{data.subhood.highestVariance.[0].number}}}</span><br>total incidents, compared to a citywide average of {{{data.subhood.highestVariance.[0].numPerHood}}} per neighborhood.</div>
+    </div>
+    <div class="grid-100 grid-parent resultsSection">
+      <div class="grid-25 grid-parent"><span class="resultNumber blue"> {{{data.subhood.highestVariance.[1].name}}}</span><br></div>
+      <div class="grid-25"><span class="resultNumber green"> {{{data.subhood.highestVariance.[1].diffFromAvg}}}x </span><br> more likely to occur here than the average neighborhood in this period</div>
+      <div class="grid-25"><span class="resultNumber green"> {{{data.subhood.highestVariance.[1].variance}}}%</span><br> of all citywide incidents happened in this neighborhood</div>
+      <div class="grid-25"><span class="resultNumber green"> {{{data.subhood.highestVariance.[1].number}}}</span><br>total incidents, compared to a citywide average of {{{data.subhood.highestVariance.[1].numPerHood}}} per neighborhood.</div>
+    </div>
+    <div class="grid-100 grid-parent resultsSection">
+      <div class="grid-25 grid-parent"><span class="resultNumber blue"> {{{data.subhood.highestVariance.[2].name}}}</span><br></div>
+      <div class="grid-25"><span class="resultNumber purple"> {{{data.subhood.highestVariance.[2].diffFromAvg}}}x </span><br> more likely to occur here than the average neighborhood in this period</div>
+      <div class="grid-25"><span class="resultNumber purple"> {{{data.subhood.highestVariance.[2].variance}}}%</span><br> of all citywide incidents happened in this neighborhood</div>
+      <div class="grid-25"><span class="resultNumber purple"> {{{data.subhood.highestVariance.[2].number}}}</span><br>total incidents, compared to a citywide average of {{{data.subhood.highestVariance.[2].numPerHood}}} per neighborhood.</div>
+    </div>
+    <div class="grid-100 grid-parent resultsSection">
+      <div class="grid-25 grid-parent"><span class="resultNumber blue"> {{{data.subhood.highestVariance.[3].name}}}</span><br></div>
+      <div class="grid-25"><span class="resultNumber yellow"> {{{data.subhood.highestVariance.[3].diffFromAvg}}}x </span><br> more likely to occur here than the average neighborhood in this period</div>
+      <div class="grid-25"><span class="resultNumber yellow"> {{{data.subhood.highestVariance.[3].variance}}}%</span><br> of all citywide incidents happened in this neighborhood</div>
+      <div class="grid-25"><span class="resultNumber yellow"> {{{data.subhood.highestVariance.[3].number}}}</span><br>total incidents, compared to a citywide average of {{{data.subhood.highestVariance.[3].numPerHood}}} per neighborhood.</div>
+    </div>
+    <div class="grid-100 grid-parent resultsSection">
+      <div class="grid-25 grid-parent"><span class="resultNumber blue"> {{{data.subhood.highestVariance.[4].name}}}</span><br></div>
+      <div class="grid-25"><span class="resultNumber"> {{{data.subhood.highestVariance.[4].diffFromAvg}}}x </span><br> more likely to occur here than the average neighborhood in this period</div>
+      <div class="grid-25"><span class="resultNumber"> {{{data.subhood.highestVariance.[4].variance}}}%</span><br> of all citywide incidents happened in this neighborhood</div>
+      <div class="grid-25"><span class="resultNumber"> {{{data.subhood.highestVariance.[4].number}}}</span><br>total incidents, compared to a citywide average of {{{data.subhood.highestVariance.[4].numPerHood}}} per neighborhood.</div>
+    </div>
   </div>
-  <div class="selectDates grid-100">
-    <h3>In the last 30 days there have been <span class="boldblue percent"> {{{data.subhood.numIncidents}}} </span> incidents in your neighborhood.</h3>
-  </div>
-  <div id="results" class="grid-100">
-  <div id="total"></div><br>
-  <div id="place1" class="grid-35 suffix-10"><span class="resultTitle"></span><br><span class="percent"></span><br><span class="totals"></span></div>
-  <div class="grid-55">
-    <div id="place2" class="resultBlock grid-50"><span class="resultTitle"></span><br><span class="percent"></span><br><span class="totals"></span></div>
-    <div id="place3" class="resultBlock grid-50"><span class="resultTitle"></span><br><span class="percent"></span><br><span class="totals"></span></div>
-    <div id="place4" class="resultBlock grid-50"><span class="resultTitle"></span><br><span class="percent"></span><br><span class="totals"></span></div>
-    <div id="place5" class="resultBlock grid-50"><span class="resultTitle"></span><br><span class="percent"></span><br><span class="totals"></span></div>
-  </div>
-  </div>
-    <p>{{{data.subhood.sortedIncidents.[0].name}}}</p>
-    <p>{{{data.subhood.sortedIncidents.[0].number}}}</p>
-    <p>{{{data.subhood.sortedIncidents.[1].name}}}</p>
-    <p>{{{data.subhood.sortedIncidents.[1].number}}}</p>
-    <p>{{{data.subhood.sortedIncidents.[2].name}}}</p>
-    <p>{{{data.subhood.sortedIncidents.[2].number}}}</p>
-    <p>{{{data.subhood.numIncidents}}}</p>
-    <p>{{{data.subhood.numVariance}}}</p>
-    <p>{{{data.subhood.percentVariance}}}</p>
   {{/if}}
   {{> map}}
 </main>
