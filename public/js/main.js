@@ -9,8 +9,6 @@ var baseURL;
 var currentService;
 var type;
 var dateHeader;
-var pip = require("./leaflet.js");
-var geojson = require("geojson-utils");
 
 // Set base SODA endpoint
 if ($("main").is("#police")) {
@@ -187,77 +185,3 @@ function addMarkers(myjson) {
       L.marker(L.latLng(myArr[i]["latitude"],myArr[i]["longitude"])).addTo(mymap);
   }
 }
-
-// Realtime address auto-completion
-
-// Address validation / verification
-
-// Get daily updated json from server
-// function getdata(callback){
-//   $.ajax({
-//       url: './data.json',
-//       dataType: 'json',
-//       cache: false
-//   }).done(function(data){
-//       //"data" will be JSON. Do what you want with it.
-//       var jsondata = data;
-//       callback(jsondata);
-//   });
-// }
-
-// var serverjson = getdata(print);
-//
-// function print(i) {
-//   alert(i);
-// }
-
-// Retrieve and clean submitted address
-// $("#addressSubmit").on("click", function getAddress() {
-//   console.log(codeAddress());
-// });
-
-// // Convert to latlng
-// geocoder = new google.maps.Geocoder();
-// function codeAddress() {
-//   var address = $("#address").val();
-//   geocoder.geocode( { 'address' : address }, function( results, status ) {
-//     if( status == google.maps.GeocoderStatus.OK ) {
-//       var userCoordinates =  ""+results[0].geometry.location.lng()+", "+results[0].geometry.location.lat()+"";
-//       console.log(userCoordinates);
-//     } else {
-//       alert( 'Geocode was not successful for the following reason: ' + status );
-//     }
-//     console.log(userCoordinates);
-//     pip.pointInLayer([userCoordinates], gjLayer, [true])[0]["feature"]["properties"]["nhood"];
-//     return userCoordinates;
-//   });
-// }
-
-// function getResults(userAddress) {
-//   var coordinates      = getCoordinates(userAddress);
-//   var userNeigh        = getNeighborhoods(coordinates);
-//   var neighborhoodData = getNeighJSON(userNeigh);
-//   showNeighborhoodResults(userNeigh);
-// }
-//
-// // Get Coordinates from address (nested function)
-// function getCoordinates(userAddress) {
-//   // coordinates = ...
-//   return coordinates;
-// }
-//
-// // Define neighborhood (nested function)
-// function getNeighborhoods(coordinates) {
-//   // userNeigh = ...
-//   return userNeigh;
-// }
-//
-// function getNeighJSON(userNeigh) {
-//   // Retrieve JSON data from server specific to neighborhood
-//   $.getJSON(...)
-// }
-//
-// function showNeighborhoodResults(userNeigh) {
-//   // Display key data from JSON (last 20 crimes; prevalence of overall crime & specific types vs city avg);
-//   // Display Leaflet map w/last X# crimes, centered on latlng
-// }

@@ -1,4 +1,3 @@
-var jquery  = require("./public/js/jquery-3.0.0.min.js");
 var express = require("express");
 var bodyParser =require("body-parser");
 var app     = express();
@@ -154,7 +153,7 @@ function saveData(json) {
 }
 
 // Initiate data gathering & storage - THIS SHOULD BE RECURRING DAILY
-getIncidentData(saveData);
+// getIncidentData(saveData);
 
 // Retrieve neighborhood data from JSON file based on user address
 function retrieveHoodData(userHood, userSubHood) {
