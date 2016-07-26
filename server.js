@@ -153,7 +153,7 @@ function saveData(json) {
 }
 
 // Initiate data gathering & storage - THIS SHOULD BE RECURRING DAILY
-getIncidentData(saveData);
+// getIncidentData(saveData);
 
 // Retrieve neighborhood data from JSON file based on user address
 function retrieveHoodData(userHood, userSubHood) {
