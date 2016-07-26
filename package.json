@@ -11,15 +11,16 @@
   "main": "server.js",
   "dependencies": {
     "body-parser": "^1.15.2",
+    "canvas": "^1.4.0",
     "express": "^4.14.0",
     "express-handlebars": "^3.0.0",
     "get-json": "0.0.3",
     "handlebars": "^4.0.5",
     "jquery": "^3.0.0",
+    "leaflet-headless": "0.1.2",
     "node-geocoder": "^3.13.1",
     "node-schedule": "^1.1.1",
-    "node-socrata": "^0.0.50",
-    "leaflet-headless": "0.1.2"
+    "node-socrata": "^0.0.50"
   },
   "devDependencies": {
     "grunt": "^1.0.1",
