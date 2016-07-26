@@ -17,14 +17,16 @@
     "get-json": "0.0.3",
     "handlebars": "^4.0.5",
     "jquery": "^3.0.0",
-    "leaflet-headless": "https://github.com/jieter/leaflet-headless.git",
+    "leaflet-hewadless": "https://github.com/jieter/leaflet-headless.git",
     "node-geocoder": "^3.13.1",
     "node-schedule": "^1.1.1",
     "node-socrata": "^0.0.50"
   },
   "devDependencies": {
     "grunt": "^1.0.1",
-    "grunt-contrib-less": "^1.3.0"
+    "grunt-contrib-less": "^1.3.0",
+    "grunt-cli": "^1.2.0",
+    "gulp": "^3.9.1",
   },
   "repository": {
     "type": "git",
