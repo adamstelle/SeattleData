@@ -17,7 +17,6 @@ var favicon = require("serve-favicon");
 // Set # of days of data to collect from server
 var numDays = 30;
 
-
 app.use(bodyParser.urlencoded({
     extended: true
 }));
