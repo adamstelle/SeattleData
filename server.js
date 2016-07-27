@@ -24,7 +24,7 @@ app.use(bodyParser.urlencoded({
 
 app.use(bodyParser.json());
 
-app.use(favicon("./public/images/favicon.ico"));
+// app.use(favicon("./public/images/favicon.ico"));
 
 // set up handlerbars view engine
 var handlebars = require("express-handlebars").create({
