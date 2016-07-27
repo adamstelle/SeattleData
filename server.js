@@ -6,7 +6,7 @@ var fs      = require("fs");
 // Store pip locally (broken module) in public to make available to client JS
 var pip     = require("./public/js/leaflet.js");
 var jsdom   = require('node-jsdom');
-var headless= require("./lib/leaflet-headless/index.js");
+var headless= require("./public/js/leaflet-headless.js");
 var port    = process.env.PORT || 3000;
 var date    = new Date();
 var getJSON = require("get-json");
