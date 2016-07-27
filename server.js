@@ -17,7 +17,6 @@ var NodeGeocoder = require('node-geocoder');
 // Set # of days of data to collect from server
 var numDays = 30;
 
-
 app.use(bodyParser.urlencoded({
     extended: true
 }));
@@ -154,7 +153,7 @@ function saveData(json) {
 }
 
 // Initiate data gathering & storage - THIS SHOULD BE RECURRING DAILY
-// getIncidentData(saveData);
+getIncidentData(saveData);
 
 // Retrieve neighborhood data from JSON file based on user address
 function retrieveHoodData(userHood, userSubHood) {
