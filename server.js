@@ -1,3 +1,4 @@
+var jquery  = require("./public/js/jquery-3.1.0.min.js");
 var express = require("express");
 var bodyParser =require("body-parser");
 var app     = express();
@@ -5,18 +6,17 @@ var path    = require("path");
 var fs      = require("fs");
 // Store pip locally (broken module) in public to make available to client JS
 var pip     = require("./public/js/leaflet.js");
-var jsdom   = require('node-jsdom');
-var headless= require("./public/js/leaflet-headless.js");
+var headless= require("leaflet-headless");
 var port    = process.env.PORT || 3000;
 var date    = new Date();
 var getJSON = require("get-json");
 var baseURL = "https://data.seattle.gov/resource/pu5n-trf4";
 var schedule= require("node-schedule");
 var NodeGeocoder = require('node-geocoder');
-var favicon = require("serve-favicon");
 
 // Set # of days of data to collect from server
 var numDays = 30;
+
 
 app.use(bodyParser.urlencoded({
     extended: true
@@ -24,7 +24,6 @@ app.use(bodyParser.urlencoded({
 
 app.use(bodyParser.json());
 
-// app.use(favicon("./public/images/favicon.ico"));
 
 // set up handlerbars view engine
 var handlebars = require("express-handlebars").create({
@@ -155,7 +154,7 @@ function saveData(json) {
 }
 
 // Initiate data gathering & storage - THIS SHOULD BE RECURRING DAILY
-getIncidentData(saveData);
+// getIncidentData(saveData);
 
 // Retrieve neighborhood data from JSON file based on user address
 function retrieveHoodData(userHood, userSubHood) {
