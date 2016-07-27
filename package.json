@@ -12,6 +12,7 @@
   "dependencies": {
     "body-parser": "^1.15.2",
     "canvas": "1.4.0",
+    "dotenv": "2.0.0",
     "express": "^4.14.0",
     "express-handlebars": "^3.0.0",
     "get-json": "0.0.3",
@@ -22,7 +23,8 @@
     "node-jsdom": "3.1.5",
     "node-schedule": "^1.1.1",
     "node-socrata": "^0.0.50",
-    "serve-favicon": "^2.3.0"
+    "serve-favicon": "^2.3.0",
+    "twilio": "2.9.1"
   },
   "devDependencies": {
     "grunt": "^1.0.1",

@@ -13,6 +13,8 @@ var getJSON = require("get-json");
 var baseURL = "https://data.seattle.gov/resource/pu5n-trf4";
 var schedule= require("node-schedule");
 var NodeGeocoder = require('node-geocoder');
+var config = require('./config');
+var twilioNotifications = require('./middleware/twilioNotifications');
 
 // Set # of days of data to collect from server
 var numDays = 30;
@@ -152,8 +154,9 @@ function saveData(json) {
   });
 }
 
-// Initiate data gathering & storage - THIS SHOULD BE RECURRING DAILY
-getIncidentData(saveData);
+schedule.scheduleJob('0 8 * * * *', function(){
+  getIncidentData(saveData);
+});
 
 // Retrieve neighborhood data from JSON file based on user address
 function retrieveHoodData(userHood, userSubHood) {
@@ -225,6 +228,19 @@ app.use(function(err, req, res, next){
   res.type("text/plain");
   res.status(500);
   res.send("500 - Server Error");
+});
+
+// Text administrator if errors / fatal errors arise
+app.use(twilioNotifications.notifyOnError);
+process.on('uncaughtException', function(err) {
+  twilioNotifications.notifyOnError(err);
+});
+
+app.use(function(err, request, response, next) {
+  console.error('An application error has occurred:');
+  console.error(err.stack);
+  response.status(500);
+  response.sendFile(path.join(__dirname, 'public', '500.html'));
 });
 
 app.listen(port);
