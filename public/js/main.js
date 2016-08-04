@@ -1,8 +1,6 @@
 $("#downloadButton").hide();
 $("#seeDataButton").hide();
 $(".tableContainer").hide();
-// Get today's date
-var today = new Date().toJSON().slice(0,10);
 var numDays;
 var urlHash = window.location.hash;
 var baseURL;
@@ -22,17 +20,6 @@ if ($("main").is("#police")) {
   type            = "type";
   dateHeader      = "datetime";
 }
-
-$("#slider").dateRangeSlider({
-  bounds:{
-    min: new Date(2016, 01, 01),
-    max: new Date(today)
-  },
-  defaultValues:{
-    min: new Date(2016, 05, 01),
-    max: new Date(today)
-  }
-});
 
 // Check if URL parameters exist; if so trigger query
 if (urlHash) {
@@ -162,26 +149,5 @@ function sortResults(counts, numDays) {
     $("#"+domArray[k].name+" > .resultTitle").html(domArray[k].key);
     $("#"+domArray[k].name+" > .percent").html(""+domArray[k].percent+"<span class='percentSign'>%</span>");
     $("#"+domArray[k].name+" > .totals").html(""+domArray[k].value+"  total incidents.");
-  }
-}
-
-var mymap = L.map("map", {
-  center: [47.6062, -122.3321],
-  zoom: 12,
-  scrollWheelZoom: false
-});
-
-// Load map
-L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/light-v9/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoiYWRhbXN0ZWxsZSIsImEiOiJjaXE1Y2JyYWkwMDU0ZmxtNnpxYmxnaDlwIn0.4Uq9e1A2t0jjoQQ_oyF_fQ', {
-    attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
-    maxZoom: 18,
-    id: 'mapbox://styles/mapbox/light-v9',
-}).addTo(mymap);
-
-// Add 300 most recent incidents to map
-function addMarkers(myjson) {
-  var myArr = $.map(myjson, function(el) {return el});
-  for(i=myArr.length-1; i>myArr.length-300; i--) {
-      L.marker(L.latLng(myArr[i]["latitude"],myArr[i]["longitude"])).addTo(mymap);
   }
 }
