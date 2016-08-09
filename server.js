@@ -2,19 +2,27 @@ var jquery  = require("./public/js/jquery-3.1.0.min.js");
 var express = require("express");
 var bodyParser =require("body-parser");
 var app     = express();
+var port    = process.env.PORT || 3000;
 var path    = require("path");
 var fs      = require("fs");
 // Store pip locally (broken module) in public to make available to client JS
 var pip     = require("./public/js/leaflet.js");
 var headless= require("leaflet-headless");
-var port    = process.env.PORT || 3000;
+var async   = require("async");
 var date    = new Date();
 var getJSON = require("get-json");
 var baseURL = "https://data.seattle.gov/resource/pu5n-trf4";
 var schedule= require("node-schedule");
 var NodeGeocoder = require('node-geocoder');
+//  Modules required for Twilio
 var config = require('./config');
 var twilioNotifications = require('./middleware/twilioNotifications');
+// Address validation
+var validation = require('./lib/addressValidator.js')
+var _ = require('underscore');
+var addressValidator = require('address-validator');
+
+var validated = {};
 
 // Set # of days of data to collect from server
 var numDays = 30;
@@ -180,6 +188,49 @@ var options = {
 
 var geocoder = NodeGeocoder(options);
 
+function parseInput(myAddress, req, res, next) {
+  async.waterfall([
+    function validateAddress(callback) {
+      var address = myAddress;
+      addressValidator.validate(address, addressValidator.match.streetAddress, function(err, exact, inexact){
+        var exactMatch = ("match: ", _.map(exact, function(a) {
+          return a.toString();
+        }));
+        var inexactMatch = ("did you mean: ", _.map(inexact, function(a) {
+          return a.toString();
+        }));
+        validated["exact"] = exactMatch;
+        validated["inexact"] = inexactMatch;
+        if (validated["exact"].length == 1) {
+          callback(null, validated["exact"][0]);
+        }
+        if (validated["exact"].length > 1) {
+          callback(null, validated["exact"][0]);
+        }
+        if (validated["exact"].length == 0) {
+          callback(null, validated["exact"][0]);
+        }
+      });
+    },
+    function getGeoCode(validated, callback) {
+      console.log(validated+" on line 216");
+      geocoder.geocode(validated, function(err, result) {
+        var userHood    = pip.pointInLayer([result[0]["longitude"],result[0]["latitude"]], gjLayer, [true])[0]["feature"]["properties"]["nhood"];
+        var userSubHood = pip.pointInLayer([result[0]["longitude"],result[0]["latitude"]], gjLayer, [true])[0]["feature"]["properties"]["nested"];
+        var hoodData = retrieveHoodData(userHood, userSubHood);
+        callback(null, hoodData);
+      });
+    }
+  ],
+  function(err, result) {
+    console.log("result is "+result)
+    var trueResult = result;
+    res.render("hood", {
+    data : results
+    })
+  })
+}
+
 // BASIC ROUTES
 app.get(['/','/police'], function(req, res) {
     res.render("police", {
@@ -200,21 +251,19 @@ app.get('/fire', function(req, res) {
 });
 
 app.get('/hood', function(req, res) {
-    res.render("hood", {
-        currentYear : new Date().getFullYear(),
-    });
+  res.render("hood", {
+      currentYear : new Date().getFullYear()
+  })
 });
 
-app.post("/address", function(req, res) {
-    geocoder.geocode(req.body.address, function(err, result) {
-      var userHood    = pip.pointInLayer([result[0]["longitude"],result[0]["latitude"]], gjLayer, [true])[0]["feature"]["properties"]["nhood"];
-      var userSubHood = pip.pointInLayer([result[0]["longitude"],result[0]["latitude"]], gjLayer, [true])[0]["feature"]["properties"]["nested"];
-      var hoodData    = retrieveHoodData(userHood, userSubHood);
-      console.log(hoodData);
-      res.render("hood", {
-        data : hoodData
-      })
-    });
+app.post("/address", function(req, res, next) {
+  var myData = parseInput(req.body.address);
+  console.log(myData+" at 261");
+  next();
+}, function(req, res, next) {
+  res.render("hood", {
+    data : myData
+  })
 });
 
 app.use(function(req, res){
@@ -230,11 +279,11 @@ app.use(function(err, req, res, next){
   res.send("500 - Server Error");
 });
 
-// Text administrator if errors / fatal errors arise
-app.use(twilioNotifications.notifyOnError);
-process.on('uncaughtException', function(err) {
-  twilioNotifications.notifyOnError(err);
-});
+// Text administrator if errors / fatal errors arise - DISABLED FOR TESTING
+// app.use(twilioNotifications.notifyOnError);
+// process.on('uncaughtException', function(err) {
+//   twilioNotifications.notifyOnError(err);
+// });
 
 app.use(function(err, request, response, next) {
   console.error('An application error has occurred:');

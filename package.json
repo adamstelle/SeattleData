@@ -11,6 +11,7 @@
   "main": "server.js",
   "dependencies": {
     "address-validator": "0.2.2",
+    "async": "2.0.1",
     "body-parser": "^1.15.2",
     "canvas": "1.4.0",
     "dotenv": "2.0.0",
@@ -25,7 +26,8 @@
     "node-schedule": "^1.1.1",
     "node-socrata": "^0.0.50",
     "serve-favicon": "^2.3.0",
-    "twilio": "2.9.1"
+    "twilio": "2.9.1",
+    "underscore": "1.8.3"
   },
   "devDependencies": {
     "grunt": "^1.0.1",
