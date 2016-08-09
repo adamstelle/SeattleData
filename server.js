@@ -3,36 +3,20 @@ var express = require("express");
 var bodyParser =require("body-parser");
 var app     = express();
 var port    = process.env.PORT || 3000;
-var path    = require("path");
-var fs      = require("fs");
-// Store pip locally (broken module) in public to make available to client JS
-var pip     = require("./public/js/leaflet.js");
 var headless= require("leaflet-headless");
-var async   = require("async");
-var date    = new Date();
-var getJSON = require("get-json");
-var baseURL = "https://data.seattle.gov/resource/pu5n-trf4";
 var schedule= require("node-schedule");
-var NodeGeocoder = require('node-geocoder');
+var getCrimes= require('./lib/getIncidents.js');
+
 //  Modules required for Twilio
 var config = require('./config');
 var twilioNotifications = require('./middleware/twilioNotifications');
-// Address validation
-var validation = require('./lib/addressValidator.js')
-var _ = require('underscore');
-var addressValidator = require('address-validator');
-
-var validated = {};
-
-// Set # of days of data to collect from server
-var numDays = 30;
+var validation = require('./middleware/addressValidator.js');
 
 app.use(bodyParser.urlencoded({
     extended: true
 }));
 
 app.use(bodyParser.json());
-
 
 // set up handlerbars view engine
 var handlebars = require("express-handlebars").create({
@@ -48,188 +32,10 @@ app.engine("handlebars", handlebars.engine);
 app.set("view engine", "handlebars");
 app.use(express.static('public'));
 
-// RECURRING SERVER SIDE SCRIPTS
-
-// Load neighborhoods & Calc total
-var neighborhoods = JSON.parse(fs.readFileSync('./jsonData/neighborhoods.geojson', 'utf8'));
-var gjLayer = L.geoJson(neighborhoods);
-var numHoods= neighborhoods["features"].length;
-
-// Build API Call
-function getIncidentData(callback) {
-  var today = date.toJSON().slice(0,10);
-  var lastMonth = new Date(date.setDate(date.getDate()-numDays)).toJSON().slice(0,10);
-  var apiCall = baseURL
-    + ".json?$limit=100000&$where=event_clearance_date >= \""
-    + lastMonth
-    + "\" AND event_clearance_date < \""
-    + today + "\"";
-  getJSON(apiCall, function(error, response) {
-    var myjson = response;
-    callback(mapIncidents(myjson));
-  });
-}
-
-function mapIncidents(myjson) {
-  var resultsByHood = [];
-  for (i=0; i<myjson.length; i++) {
-    try {
-      var result = {};
-      result["neighborhood"] = pip.pointInLayer([myjson[i]["longitude"],myjson[i]["latitude"]], gjLayer, [true])[0]["feature"]["properties"]["nhood"];
-      result["localhood"] = pip.pointInLayer([myjson[i]["longitude"],myjson[i]["latitude"]], gjLayer, [true])[0]["feature"]["properties"]["nested"];
-      result["type"]    = myjson[i]["event_clearance_subgroup"];
-      result["lat"]     = myjson[i]["latitude"];
-      result["lng"]     = myjson[i]["longitude"];
-      result["address"] = myjson[i]["hundred_block_location"];
-      result["id"]      = myjson[i]["cad_cdw_id"]
-      resultsByHood.push(result);
-    }
-    catch (e) {
-      console.log(" "+i+" incident has undefined latlng!, "+(e)+" ");
-    }
-  }
-  var myNeighborhood = [];
-
-  // Get city-wide incidents by type & avg # incidents per neighborhood & add to array
-  var totalIncidentsByType = (getIncidentsByType(resultsByHood));
-  myNeighborhood.push(totalIncidentsByType);
-
-  neighborhoods["features"].forEach(function(n) {
-    var thisHood = {};
-    thisHood["subhood"]       = n["properties"]["name"];
-    thisHood["hood"]          = n["properties"]["nhood"];
-    thisHood["incidents"]     = resultsByHood.filter(function(o) {
-      return (o.localhood || o.neighborhood) == n["properties"]["name"]
-    });
-    thisHood["sortedIncidents"]= getIncidentsByType(thisHood["incidents"]);
-    thisHood["numIncidents"] = thisHood["incidents"].length;
-
-    // Calculate variance in incident types btw neighborhood & city-wide
-    thisHood["highestVariance"] = [];
-    thisHood["sortedIncidents"].forEach(function(p) {
-      for(q=0;q < myNeighborhood[0].length; q++) {
-        if(p["name"] == myNeighborhood[0][q]["name"]) {
-          p["variance"] = Math.round((p["number"]/ (myNeighborhood[0][q]["number"]))*100)/10;
-          p["diffFromAvg"] = Math.round((p["number"] /
-          (myNeighborhood[0][q]["number"] / numHoods))*10)/10;
-          p["numPerHood"] = Math.round((myNeighborhood[0][q]["number"] / numHoods)*10)/10;
-        }
-      }
-      thisHood["highestVariance"].push(p);
-    });
-    thisHood["highestVariance"].sort(function(a,b) {
-      return b["variance"] - a["variance"];
-    });
-    thisHood["percentage"]   = Math.round((thisHood["numIncidents"] / resultsByHood.length)*1000)/10;
-    thisHood["diffFromAvg"]  = Math.round((thisHood["numIncidents"] / (resultsByHood.length / numHoods))*10)/10;
-    myNeighborhood.push(thisHood);
-  });
-
-  // Convert to JSON
-  var jsonResults = JSON.stringify(myNeighborhood);
-  return jsonResults;
-}
-
-// Calc total incidents by type
-function getIncidentsByType(object) {
-  var counts = {};
-  var IncidentsByType  = [];
-  object.forEach(function (o) {
-    if (!counts.hasOwnProperty(o.type)) {
-      counts[o.type] = 0;
-    }
-    counts[o.type] += 1;
-  });
-  for (var item in counts) {
-    IncidentsByType.push({"name" : item, "number" : counts[item], "avgPerHood" : (counts[item]/numHoods)})
-    IncidentsByType.sort(
-      function(a, b) {
-        return a["number"] - b["number"]
-      }
-    )
-  }
-  IncidentsByType.reverse();
-  return IncidentsByType;
-}
-
-// Save the results to JSON file on server
-function saveData(json) {
-  fs.writeFile("./jsonData/currentData.json", json, function(err) {
-    if(err) {
-      return console.log(err);
-    }
-    console.log("The file was saved!");
-  });
-}
-
+// Get new crime incidents every 24 hrs
 schedule.scheduleJob('0 8 * * * *', function(){
-  getIncidentData(saveData);
+  getCrimes.getIncidentData(getCrimes.saveData);
 });
-
-// Retrieve neighborhood data from JSON file based on user address
-function retrieveHoodData(userHood, userSubHood) {
-  var currentHoodData = JSON.parse(fs.readFileSync('./jsonData/currentData.json', 'utf8'));
-  var result = {};
-  result.hood = [];
-  currentHoodData.forEach(function (o) {
-    if (o.subhood == userSubHood) {
-      result["subhood"] = o;
-    }
-    if (o.hood == userHood) {
-      result.hood.push(o);
-    }
-  });
-  return result;
-}
-
-var options = {
-  provider: 'google'
-};
-
-var geocoder = NodeGeocoder(options);
-
-function parseInput(myAddress, req, res, next) {
-  async.waterfall([
-    function validateAddress(callback) {
-      var address = myAddress;
-      addressValidator.validate(address, addressValidator.match.streetAddress, function(err, exact, inexact){
-        var exactMatch = ("match: ", _.map(exact, function(a) {
-          return a.toString();
-        }));
-        var inexactMatch = ("did you mean: ", _.map(inexact, function(a) {
-          return a.toString();
-        }));
-        validated["exact"] = exactMatch;
-        validated["inexact"] = inexactMatch;
-        if (validated["exact"].length == 1) {
-          callback(null, validated["exact"][0]);
-        }
-        if (validated["exact"].length > 1) {
-          callback(null, validated["exact"][0]);
-        }
-        if (validated["exact"].length == 0) {
-          callback(null, validated["exact"][0]);
-        }
-      });
-    },
-    function getGeoCode(validated, callback) {
-      console.log(validated+" on line 216");
-      geocoder.geocode(validated, function(err, result) {
-        var userHood    = pip.pointInLayer([result[0]["longitude"],result[0]["latitude"]], gjLayer, [true])[0]["feature"]["properties"]["nhood"];
-        var userSubHood = pip.pointInLayer([result[0]["longitude"],result[0]["latitude"]], gjLayer, [true])[0]["feature"]["properties"]["nested"];
-        var hoodData = retrieveHoodData(userHood, userSubHood);
-        callback(null, hoodData);
-      });
-    }
-  ],
-  function(err, result) {
-    console.log("result is "+result)
-    var trueResult = result;
-    res.render("hood", {
-    data : results
-    })
-  })
-}
 
 // BASIC ROUTES
 app.get(['/','/police'], function(req, res) {
@@ -256,13 +62,9 @@ app.get('/hood', function(req, res) {
   })
 });
 
-app.post("/address", function(req, res, next) {
-  var myData = parseInput(req.body.address);
-  console.log(myData+" at 261");
-  next();
-}, function(req, res, next) {
+app.post("/address", validation.parseInput, function(req, res, next) {
   res.render("hood", {
-    data : myData
+    data : req.trueResult
   })
 });
 
@@ -280,16 +82,9 @@ app.use(function(err, req, res, next){
 });
 
 // Text administrator if errors / fatal errors arise - DISABLED FOR TESTING
-// app.use(twilioNotifications.notifyOnError);
-// process.on('uncaughtException', function(err) {
-//   twilioNotifications.notifyOnError(err);
-// });
-
-app.use(function(err, request, response, next) {
-  console.error('An application error has occurred:');
-  console.error(err.stack);
-  response.status(500);
-  response.sendFile(path.join(__dirname, 'public', '500.html'));
+app.use(twilioNotifications.notifyOnError);
+process.on('uncaughtException', function(err) {
+  twilioNotifications.notifyOnError(err);
 });
 
 app.listen(port);
