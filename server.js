@@ -1,16 +1,13 @@
-var jquery  = require("./public/js/jquery-3.1.0.min.js");
 var express = require("express");
-var bodyParser =require("body-parser");
 var app     = express();
 var port    = process.env.PORT || 3000;
-var headless= require("leaflet-headless");
+var bodyParser =require("body-parser");
 var schedule= require("node-schedule");
 var getCrimes= require('./lib/getIncidents.js');
-
+var validation = require('./middleware/addressValidator.js');
 //  Modules required for Twilio
 var config = require('./config');
 var twilioNotifications = require('./middleware/twilioNotifications');
-var validation = require('./middleware/addressValidator.js');
 
 app.use(bodyParser.urlencoded({
     extended: true
@@ -38,22 +35,28 @@ schedule.scheduleJob('0 8 * * * *', function(){
 });
 
 // BASIC ROUTES
+app.get('/', function(req, res) {
+  res.render("home", {
+    currentYear: new Date().getFullYear()
+  });
+});
+
 app.get(['/','/police'], function(req, res) {
-    res.render("police", {
-        currentYear : new Date().getFullYear(),
-        service     : "Police",
-        logo        : '<input type="image" id="badge" src="./images/SPD.jpg"/>',
-        switchLink  : '<a class="btn btn-primary red" id="service" type="submit" href="./fire">View Fire Data</a>'
-    });
+  res.render("police", {
+      currentYear : new Date().getFullYear(),
+      service     : "Police",
+      logo        : '<input type="image" id="badge" src="./images/SPD.jpg"/>',
+      switchLink  : '<a class="btn btn-primary red" id="service" type="submit" href="./fire">View Fire Data</a>'
+  });
 });
 
 app.get('/fire', function(req, res) {
-    res.render("fire", {
-        currentYear : new Date().getFullYear(),
-        service     : "Fire",
-        logo        : '<input type="image" id="badge" src="./images/SFD.jpg"/>',
-        switchLink  : '<a class="btn btn-primary" id="service" type="submit" href="./police">View Police Data</a>'
-    });
+  res.render("fire", {
+      currentYear : new Date().getFullYear(),
+      service     : "Fire",
+      logo        : '<input type="image" id="badge" src="./images/SFD.jpg"/>',
+      switchLink  : '<a class="btn btn-primary" id="service" type="submit" href="./police">View Police Data</a>'
+  });
 });
 
 app.get('/hood', function(req, res) {
@@ -62,7 +65,7 @@ app.get('/hood', function(req, res) {
   })
 });
 
-app.post("/address", validation.parseInput, function(req, res, next) {
+app.post("/address", validation.parseInput, validation.getGeoCode, function(req, res, next) {
   res.render("hood", {
     data : req.trueResult
   })
