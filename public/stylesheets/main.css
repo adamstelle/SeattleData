@@ -96,12 +96,13 @@ footer {
 .green {
   color: #27AE78;
 }
-#addressBar {
-  text-align: center;
-}
-.addressFormat {
-  height: 3rem;
+.addressContainer {
   font-size: 1.3rem;
+  margin-bottom: 3rem;
+  margin-top: .5rem;
+}
+.addressBar {
+  margin: .5rem 0 .5rem 0;
 }
 .resultsSection {
   margin-bottom: 2rem;

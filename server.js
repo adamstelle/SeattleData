@@ -41,7 +41,7 @@ app.get('/', function(req, res) {
   });
 });
 
-app.get(['/','/police'], function(req, res) {
+app.get('/police', function(req, res) {
   res.render("police", {
       currentYear : new Date().getFullYear(),
       service     : "Police",
