@@ -1,14 +1,17 @@
 <h1 class="title">Seattle Crime Tracker</h1>
 <h3>An easy to use tool to give citizens a realtime look at the state of crime incidents in Seattle.</h3><br>
 
-  <div class="grid-100 addressContainer">
+  <div class="grid-100 grid-parent addressContainer">
     <h4>Curious about crime incidents in your neighborhood?
     <form method="POST" action="/address?form=useraddress">
-      <input type="text" name="address" placeholder="Enter your address to find out." class="form-control grid-60 addressBar" id="address">
-      <input type="submit" value="Submit" id="addressSubmit" class="btn btn-primary addressFormat">
+      <div class="addressBar">
+        <input type="text" name="address" placeholder="Enter your address to find out." class="form-control grid-60 inputField" id="address">
+        <input type="submit" value="Submit" id="addressSubmit" class="btn btn-primary addressFormat">
+      </div>
     </form>
   </div>
-  <div class="grid-100">
+  <div class="grid-100 grid-parent">
+    <h4>
     Alternative, get a citywide look at <a class="btn btn-primary" id="service" type="submit" href="./police">Police</a> or <a class="btn btn-primary red" id="service" type="submit" href="./fire">Fire</a> incidents.</h4>
     <p><em>All data is provided courtesy of the city of Seattle. Check out <a href="https://data.seattle.gov" target="_blank">data.seattle.gov</a> for more info.</p>
   </div>
