@@ -97,7 +97,7 @@ footer {
   color: #27AE78;
 }
 .blackButton {
-  background-color: black;
+  background-color: #333;
   color: white;
 }
 .addressContainer {
@@ -107,6 +107,11 @@ footer {
 }
 .addressBar {
   margin: .5rem 0 .5rem 0;
+}
+#errorMsg {
+  font-size: 1.2rem;
+  color: #B74934;
+  font-style: italic;
 }
 .inputField {
   margin: 0 .5rem .5rem 0;

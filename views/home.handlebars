@@ -1,14 +1,16 @@
 <h1 class="title">Seattle Crime Tracker</h1>
 <h3>An easy to use tool to give citizens a realtime look at the state of crime incidents in Seattle.</h3><br>
-
   <div class="grid-100 grid-parent addressContainer">
     <h4>Curious about crime incidents in your neighborhood?
     <form method="POST" action="/address?form=useraddress">
       <div class="addressBar">
-        <input type="text" name="address" placeholder="Enter your address to find out." class="form-control grid-60 inputField" id="address">
+        <input id="autocomplete" onFocus="geolocate()" type="text" name="address" placeholder="Enter your address to find out." class="form-control grid-60 inputField" id="address">
         <input type="submit" value="Submit" id="addressSubmit" class="btn btn-primary addressFormat">
       </div>
     </form>
+    {{#if error}}
+      {{{error}}}
+    {{/if}}
   </div>
   <div class="grid-100 grid-parent">
     <h4>

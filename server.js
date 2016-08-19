@@ -66,9 +66,15 @@ app.get('/hood', function(req, res) {
 });
 
 app.post("/address", validation.parseInput, validation.getGeoCode, function(req, res, next) {
-  res.render("hood", {
-    data : req.trueResult
-  })
+  if (req.trueResult) {
+    res.render("hood", {
+      data : req.trueResult
+    })
+  } else {
+    res.render("home", {
+      error : req.error
+    })
+  }
 });
 
 app.use(function(req, res){
@@ -85,9 +91,9 @@ app.use(function(err, req, res, next){
 });
 
 // Text administrator if errors / fatal errors arise - DISABLED FOR TESTING
-app.use(twilioNotifications.notifyOnError);
-process.on('uncaughtException', function(err) {
-  twilioNotifications.notifyOnError(err);
-});
+// app.use(twilioNotifications.notifyOnError);
+// process.on('uncaughtException', function(err) {
+//   twilioNotifications.notifyOnError(err);
+// });
 
 app.listen(port);
